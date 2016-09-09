@@ -43,6 +43,7 @@ The constructor takes one argument, an array of externals. Each external is an o
   The URL used in the script tag. For example, for React, you can use a CDN like `https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js`.
 
 ## Example
+### `webpack.config.js`
 ```js
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
@@ -55,8 +56,19 @@ module.exports = {
       {name: 'jquery', var: 'jQuery', url: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js'},
       {name: 'react', var: 'React', url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js'},
       {name: 'react-dom', var: 'ReactDOM', url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js'},
-      {name: 'redux', var: 'Redux', url: 'https://cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.js'}
+      {name: 'redux', var: 'Redux', url: 'https://cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.js'},
+      {name: 'bootstrap.css', url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css'},
+      {name: 'font-awesome.css', url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css'}
     ]);
   ]
 };
 ```
+
+### `index.jsx`
+```js
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
+import {createStore, applyMiddleware, combineReducers} from 'redux';
+```
+
+Note that since they are externals, they are always loaded exactly once, whether they are used in source code or not. So this means that it is unnecessary to import the CSS libraries.
