@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/mmiller42/html-webpack-externals-plugin/issues"
   },
-  "homepage": "https://github.com/mmiller42/html-webpack-externals-plugin#readme"
+  "homepage": "https://github.com/mmiller42/html-webpack-externals-plugin#readme",
+  "dependencies": {
+    "require-resolve": "0.0.2"
+  }
 }

@@ -1,14 +1,22 @@
 # html-webpack-externals-plugin
+
 This plugin supplements the fantastic [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) by providing a very basic interface for loading your external dependencies.
 
 Webpack developers advise using externals to speed up compile time during development/builds as well as to leverage the caching capabilities of browsers by fetching popular libraries from CDNs instead of reading them out of the bundle.
 
+This plugin allows you to load external CSS and JS dependencies with:
+
+* **Absolute URLs.** This approach lets you leverage the caching and speed benefits of CDNs. In this case, the module does not need to be in your dependencies list of your `package.json` and require/import statements will still behave as expected.Script/link tags with the given URLs are appended to the HTML.
+* **Local module dist files.** This approach lets you serve dist files of your specified dependencies instead of bundling them. At build time, the listed externals are copied from your `node_modules` into your build and script/link tags with relative paths are appended to the HTML.
+
 ## Installation
+
 ```sh
 npm install html-webpack-externals-plugin --save-dev
 ```
 
 ## Usage
+
 Add it to the `plugins` array of your Webpack configuration, after your `HtmlWebpackPlugin` instance.
 
 ```js
@@ -20,7 +28,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin(),
     new HtmlWebpackExternalsPlugin(
-      // See the Configuration section
+      // See the API section
     );
   ]
 };
@@ -28,22 +36,53 @@ module.exports = {
 
 When using this plugin, do *not* define `externals` in the Webpack configuration yourself; it will be written by the plugin at runtime.
 
-## Configuration
-The constructor takes one argument, an array of externals. Each external is an object with these properties:
-* *string* `name`
+## API
 
-  The original name of the module, which is what is used to reference the dependency in application code. For example, if you write `import React from 'react'` or `var $ = require('jquery')`, set the name to `react` or `jquery`, respectively.
+### new HtmlWebpackExternalsPlugin(externals, options)
 
-* *string/boolean* `var`
+#### externals
 
-  The name of the variable that is globally exported on the `window` object when the module is loaded. For example, React creates a variable named `React` and jQuery creates a variable `jQuery`. If the library doesn't export anything (a CSS library like Bootstrap, for example), just set this to `true`.
+An array of objects, each of which represents an external. Each object may have a set of properties, which are documented in the following code sample.
 
-* *string* `url`
+```js
+[
+  {
+    // The name of the external dependency, i.e. what is passed into `require()` calls or `import`
+    // statements.
+    name: 'react',
+    // JS library dists typically export their API through a single global variable on the `window`
+    // object, e.g. `jQuery` or `React`. If the external does not export anything (e.g. a CSS
+    // dependency), omit this property.
+    var: 'React',
+    // The absolute URL to use when loading the dependency from a CDN.
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js',
+    // Alternatively, you can specify a path to a dist file of one of your packages in `node_modules`.
+    // This will copy it to the build directory when Webpack runs.
+    path: 'react/dist/react.min.js'
+  }
+]
+```
 
-  The URL used in the script tag. For example, for React, you can use a CDN like `https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js`.
+#### options
+
+An object containing configuration options for the plugin. Both options apply only to local externals (i.e. externals that use `path` instead of `url`).
+
+```js
+{
+  // The absolute path to resolve locally installed externals from. Usually this is your
+  // application's root directory. It is required for loading local externals. Most of the time you
+  // can pass `__dirname` to use the current directory.
+  basedir: __dirname,
+  // The directory to copy locally installed externals to within the build directory. Defaults to
+  // `'vendor'`.
+  dest: 'vendor'
+}
+```
 
 ## Example
-### `webpack.config.js`
+
+### webpack.config.js
+
 ```js
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
@@ -52,23 +91,40 @@ module.exports = {
   // ...your Webpack config
   plugins: [
     new HtmlWebpackPlugin(),
-    new HtmlWebpackExternalsPlugin([
-      {name: 'jquery', var: 'jQuery', url: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js'},
-      {name: 'react', var: 'React', url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js'},
-      {name: 'react-dom', var: 'ReactDOM', url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js'},
-      {name: 'redux', var: 'Redux', url: 'https://cdnjs.cloudflare.com/ajax/libs/redux/3.6.0/redux.js'},
-      {name: 'bootstrap.css', url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css'},
-      {name: 'font-awesome.css', url: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css'}
-    ]);
+    new HtmlWebpackExternalsPlugin(
+      [
+        // Using a CDN for a JS library
+        {
+          name: 'jquery',
+          var: 'jQuery',
+          url: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js'
+				},
+        // Using a locally installed module for a JS library
+        {
+          name: 'react',
+          var: 'React',
+          path: 'react/dist/react.min.js'
+				},
+        // Using a CDN for a library with no export (e.g. a CSS module)
+        {
+          name: 'bootstrap.css',
+          url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css'
+				}
+      ],
+      {
+        // Resolve local modules relative to this directory
+        basedir: __dirname
+      }
+    );
   ]
 };
 ```
 
-### `index.jsx`
+### index.jsx
+
 ```js
 import React, {Component} from 'react';
-import ReactDOM from 'react-dom';
-import {createStore, applyMiddleware, combineReducers} from 'redux';
+import $ from 'jquery';
 ```
 
-Note that since they are externals, they are always loaded exactly once, whether they are used in source code or not. So this means that it is unnecessary to import the CSS libraries.
+Note that since they are externals, they are always loaded exactly once, whether they are used in source code or not. So this means that it is unnecessary to import the CSS libraries, like Bootstrap.
