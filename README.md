@@ -98,18 +98,18 @@ module.exports = {
           name: 'jquery',
           var: 'jQuery',
           url: 'https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.4/jquery.js'
-				},
+        },
         // Using a locally installed module for a JS library
         {
           name: 'react',
           var: 'React',
           path: 'react/dist/react.min.js'
-				},
+        },
         // Using a CDN for a library with no export (e.g. a CSS module)
         {
           name: 'bootstrap.css',
           url: 'https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.css'
-				}
+        }
       ],
       {
         // Resolve local modules relative to this directory
