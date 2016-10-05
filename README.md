@@ -125,6 +125,7 @@ module.exports = {
 ```js
 import React, {Component} from 'react';
 import $ from 'jquery';
+// No need to import 'bootstrap.css' because it's already been added to the page
 ```
 
 Note that since they are externals, they are always loaded exactly once, whether they are used in source code or not. So this means that it is unnecessary to import the CSS libraries, like Bootstrap.
