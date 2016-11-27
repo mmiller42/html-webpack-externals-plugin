@@ -2,11 +2,11 @@
 
 This plugin supplements the fantastic [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) by providing a very basic interface for loading your external dependencies.
 
-Webpack developers advise using externals to speed up compile time during development/builds as well as to leverage the caching capabilities of browsers by fetching popular libraries from CDNs instead of reading them out of the bundle.
+Webpack developers advise using externals to speed up compile time during development/builds as well as to leverage the caching capabilities of browsers.
 
 This plugin allows you to load external CSS and JS dependencies with:
 
-* **Absolute URLs.** This approach lets you leverage the caching and speed benefits of CDNs. In this case, the module does not need to be in your dependencies list of your `package.json` and require/import statements will still behave as expected.Script/link tags with the given URLs are appended to the HTML.
+* **Absolute URLs.** This approach lets you leverage the caching and speed benefits of CDNs. In this case, the module does not need to be in your dependencies list of your `package.json` and require/import statements will still behave as expected. Script/link tags with the given URLs are appended to the HTML.
 * **Local module dist files.** This approach lets you serve dist files of your specified dependencies instead of bundling them. At build time, the listed externals are copied from your `node_modules` into your build and script/link tags with relative paths are appended to the HTML.
 
 ## Installation
@@ -55,7 +55,11 @@ An array of objects, each of which represents an external. Each object may have 
     // dependency), omit this property.
     var: 'React',
     // The absolute URL to use when loading the dependency from a CDN.
-    url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js',
+    url: 'https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js'
+  },
+  {
+    name: 'react',
+    var: 'React',
     // Alternatively, you can specify a path to a dist file of one of your packages in `node_modules`.
     // This will copy it to the build directory when Webpack runs.
     path: 'react/dist/react.min.js'
@@ -129,3 +133,18 @@ import $ from 'jquery';
 ```
 
 Note that since they are externals, they are always loaded exactly once, whether they are used in source code or not. So this means that it is unnecessary to import the CSS libraries, like Bootstrap.
+
+## Assets Required by Library
+
+For local externals (i.e. externals that use `path` instead of `url`), sometimes you need to copy other assets to the dist that the library depends on (e.g. font assets used by Bootstrap).
+
+The easiest way to accomplish this is by complementing the HtmlWebpackExternalsPlugin with the [CopyWebpackPlugin](https://github.com/kevlened/copy-webpack-plugin), which copies files in a directory to the build.
+
+In your Webpack configuration's `plugins` array, add the plugin after your HtmlWebpackExternalsPlugin instance.
+
+```js
+new CopyWebpackPlugin([
+  {from: 'node_modules/bootstrap/dist/', to: 'vendor/bootstrap/dist/'},
+  {from: 'node_modules/font-awesome/fonts/', to: 'vendor/font-awesome/fonts/'}
+])
+```
