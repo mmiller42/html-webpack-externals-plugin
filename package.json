@@ -1,6 +1,6 @@
 {
   "name": "html-webpack-externals-plugin",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Supplemental plugin for HtmlWebpackPlugin to append script tags for external modules",
   "main": "./lib/index.js",
   "repository": {
