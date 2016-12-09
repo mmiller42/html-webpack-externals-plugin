@@ -108,7 +108,7 @@ module.exports = {
 <script type="text/javascript" src="lib/jquery/jquery-3.1.1.js"></script><script type="text/javascript" src="lib/d3/d3.min.js"></script><script type="text/javascript" src="./js/entry.js"></script></body>
 </html> 
 ```
-#### Note: the plugin will get property 'lib' from configuration of HtmlWebpackPlugin, and not get from anywhere.
+#### Note: the plugin will get property 'lib' from configuration of HtmlWebpackPlugin, and not get from anywhere. If 'lib' is absent, then all libs will be appended
 
 ## API
 
