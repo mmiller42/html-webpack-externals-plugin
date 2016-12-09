@@ -17,6 +17,7 @@ npm install html-webpack-externals-plugin --save-dev
 
 ## Usage
 
+### Basic
 Add it to the `plugins` array of your Webpack configuration, after your `HtmlWebpackPlugin` instance.
 
 ```js
@@ -35,6 +36,79 @@ module.exports = {
 ```
 
 When using this plugin, do *not* define `externals` in the Webpack configuration yourself; it will be written by the plugin at runtime.
+
+### More Detail
+
+```js
+//webpack.config.js
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackExternalsPlugin = require('html-webpack-externals-plugin');
+
+module.exports = {
+  // ...your Webpack config
+  plugins: [
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'path.to.html.template.name'),
+      lib: ['jquery', 'd3', 'bootstrap.css'],
+      chunks: ['entry-name']
+    }),
+    new HtmlWebpackExternalsPlugin(
+        [
+          {
+              name: 'jquery',
+              var: 'jQuery',
+              path: './jquery/jquery-3.1.1.js'
+          },
+          {
+              name: 'd3',
+              var: 'd3',
+              path: './d3/d3.min.js'
+          },
+          {
+              name: 'Highcharts',
+              var: 'Highcharts',
+              path: './highcharts-5.0.4/highcharts.js'
+          },
+          {
+              name: 'HighchartsMore',
+              var: 'Highcharts',
+              path: './highcharts-5.0.4/highcharts-more.js'
+          },
+          {
+              name: 'bootstrap.css',
+              path: './bootstrap-3.3.7/css/bootstrap.min.css'
+          },
+      ], 
+      {
+          basedir: 'path.to.your.lib.basedir',
+          dest: 'lib'
+      }
+    );
+  ]
+};
+```
+
+```js
+//output html
+//entry.css is imported by chunk 'entry'
+<!-- index.html -->
+<!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <meta name="renderer" content="webkit">
+  <title>XXX</title>
+<link href="lib/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet"><link href="./css/entry.css" rel="stylesheet"></head>
+<body>
+<button id="btn">test</button>
+
+<div id="industryMap"></div>
+<script type="text/javascript" src="lib/jquery/jquery-3.1.1.js"></script><script type="text/javascript" src="lib/d3/d3.min.js"></script><script type="text/javascript" src="./js/entry.js"></script></body>
+</html> 
+```
+#### Note: the plugin will get property 'lib' from configuration of HtmlWebpackPlugin, and not get from anywhere.
 
 ## API
 
