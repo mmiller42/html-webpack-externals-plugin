@@ -1,4 +1,46 @@
-# html-webpack-externals-plugin
+# html-webpack-externals-plugin *DEPRECATED*
+
+FYI, I don't advise people to use this plugin, personally. I developed it with the intention of having it keep my code clean, but it's buggy in too many edge cases. I'm finding that it's better (if more verbose), to use a combination of [`externals`](https://webpack.github.io/docs/configuration.html#externals), [`HtmlWebpackPlugin`](https://github.com/jantimon/html-webpack-plugin), [`HtmlWebpackIncludeAssetsPlugin`](https://github.com/jharris4/html-webpack-include-assets-plugin), and [`CopyWebpackPlugin`](https://github.com/kevlened/copy-webpack-plugin), like so:
+
+```js
+	plugins: [
+		new CopyWebpackPlugin([
+			{ from: 'node_modules/react/dist/react.js', to: 'vendor/js/' },
+			{ from: 'node_modules/react-dom/dist/react-dom.js', to: 'vendor/js/' },
+			{ from: 'node_modules/redux/dist/redux.js', to: 'vendor/js/' },
+			{ from: 'node_modules/semantic-ui-css/semantic.css', to: 'vendor/css/' },
+			{ from: 'node_modules/semantic-ui-css/themes/', to: 'vendor/css/themes/' }
+		]),
+		new HtmlWebpackIncludeAssetsPlugin({
+			assets: [
+				'vendor/js/react.js',
+				'vendor/js/react-dom.js',
+				'vendor/js/redux.js',
+				'vendor/css/semantic.css'
+			],
+			append: false,
+			hash: true
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'index.html',
+			template: 'src/index.html',
+			hash: true
+		})
+	],
+	externals: {
+		react: 'React',
+		'react-dom': 'ReactDOM',
+		redux: 'Redux'
+	}
+```
+
+While it's a little more redundant, it's more reliable and generally more configurable.
+
+If I end up rewriting this plugin at some point, it will probably just provide an abstraction layer over these other plugins.
+
+Documentation is below, but be warned that this plugin is buggy and somewhat unreliable for a number of edge cases.
+
+***
 
 This plugin supplements the fantastic [html-webpack-plugin](https://github.com/ampedandwired/html-webpack-plugin) by providing a very basic interface for loading your external dependencies.
 
