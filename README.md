@@ -1,37 +1,45 @@
 # html-webpack-externals-plugin *DEPRECATED*
 
-FYI, I don't advise people to use this plugin, personally. I developed it with the intention of having it keep my code clean, but it's buggy in too many edge cases. I'm finding that it's better (if more verbose), to use a combination of [`externals`](https://webpack.github.io/docs/configuration.html#externals), [`HtmlWebpackPlugin`](https://github.com/jantimon/html-webpack-plugin), [`HtmlWebpackIncludeAssetsPlugin`](https://github.com/jharris4/html-webpack-include-assets-plugin), and [`CopyWebpackPlugin`](https://github.com/kevlened/copy-webpack-plugin), like so:
+I don't advise people to use this plugin, personally. I developed it with the intention of having it keep my code clean, but it's buggy in too many edge cases. I'm finding that it's better (if more verbose), to use a combination of [`externals`](https://webpack.github.io/docs/configuration.html#externals), [`HtmlWebpackPlugin`](https://github.com/jantimon/html-webpack-plugin), [`HtmlWebpackIncludeAssetsPlugin`](https://github.com/jharris4/html-webpack-include-assets-plugin), and [`CopyWebpackPlugin`](https://github.com/kevlened/copy-webpack-plugin), like so:
 
 ```js
-	plugins: [
-		new CopyWebpackPlugin([
-			{ from: 'node_modules/react/dist/react.js', to: 'vendor/js/' },
-			{ from: 'node_modules/react-dom/dist/react-dom.js', to: 'vendor/js/' },
-			{ from: 'node_modules/redux/dist/redux.js', to: 'vendor/js/' },
-			{ from: 'node_modules/semantic-ui-css/semantic.css', to: 'vendor/css/' },
-			{ from: 'node_modules/semantic-ui-css/themes/', to: 'vendor/css/themes/' }
-		]),
-		new HtmlWebpackIncludeAssetsPlugin({
-			assets: [
-				'vendor/js/react.js',
-				'vendor/js/react-dom.js',
-				'vendor/js/redux.js',
-				'vendor/css/semantic.css'
-			],
-			append: false,
-			hash: true
-		}),
-		new HtmlWebpackPlugin({
-			filename: 'index.html',
-			template: 'src/index.html',
-			hash: true
-		})
-	],
-	externals: {
-		react: 'React',
-		'react-dom': 'ReactDOM',
-		redux: 'Redux'
-	}
+  plugins: [
+    // Use CopyWebpackPlugin to copy dist files to your outputPath
+    new CopyWebpackPlugin([
+      { from: 'node_modules/react/dist/react.js', to: 'vendor/js/' },
+      { from: 'node_modules/react-dom/dist/react-dom.js', to: 'vendor/js/' },
+      { from: 'node_modules/redux/dist/redux.js', to: 'vendor/js/' },
+      { from: 'node_modules/semantic-ui-css/semantic.css', to: 'vendor/css/' },
+      // Required assets of your dependencies (such as fonts and images) can be copied too
+      { from: 'node_modules/semantic-ui-css/themes/', to: 'vendor/css/themes/' }
+    ]),
+    // Use HtmlWebpackAssetsPlugin to add asset script/link tags to HTML output
+    new HtmlWebpackIncludeAssetsPlugin({
+      // List of JS and CSS paths (relative to outputPath) to load
+      assets: [
+        'vendor/js/react.js',
+        'vendor/js/react-dom.js',
+        'vendor/js/redux.js',
+        'vendor/css/semantic.css'
+      ],
+      // Insert these assets before the bundle file(s)
+      append: false,
+      // Add hash to end of filename so that if your dependencies update, cache will refresh
+      hash: true
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'index.html',
+      template: 'src/index.html',
+      hash: true
+    })
+  ],
+  // Specify the dependencies to exclude from the bundle since the dist files are being used
+  // keys are the module names, values are the globals exported by the dist files
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+    redux: 'Redux'
+  }
 ```
 
 While it's a little more redundant, it's more reliable and generally more configurable.
