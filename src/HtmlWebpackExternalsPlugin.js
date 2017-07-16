@@ -2,7 +2,8 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
 
-const validateConfig = new Ajv().compile({
+const ajv = new Ajv()
+const validateConfig = ajv.compile({
 	type: 'object',
 	properties: {
 		externals: {
@@ -34,7 +35,7 @@ const validateConfig = new Ajv().compile({
 export default class HtmlWebpackExternalsPlugin {
 	static validateArguments(config) {
 		if (!validateConfig(config)) {
-			throw validateConfig.errors
+			throw new TypeError(ajv.errorsText(validateConfig.errors))
 		}
 	}
 
@@ -46,17 +47,17 @@ export default class HtmlWebpackExternalsPlugin {
 		this.assetsToCopy = []
 		this.externals = {}
 
-		const { externals, hash, outputPath } = config
+		const { externals, hash = false, outputPath = 'vendor' } = config
 		this.hash = hash
 		this.outputPath = outputPath
 
 		externals.forEach(
-			({ module, entry, global = null, supplements = [], append = true }) => {
+			({ module, entry, global = null, supplements = [], append = false }) => {
 				this.externals[module] = global
 
-				const entries = Array.isArray(entry)
-					? entry
-					: [entry].map(entry => `${module}/${entry}`)
+				const entries = (Array.isArray(entry) ? entry : [entry]).map(
+					entry => `${module}/${entry}`
+				)
 
 				if (append) {
 					this.assetsToAppend = [...this.assetsToAppend, ...entries]
@@ -64,13 +65,11 @@ export default class HtmlWebpackExternalsPlugin {
 					this.assetsToPrepend = [...this.assetsToPrepend, ...entries]
 				}
 
-				if (supplements.length) {
-					this.assetsToCopy = [
-						...this.assetsToCopy,
-						...entries,
-						...supplements.map(asset => `${module}/${asset}`),
-					]
-				}
+				this.assetsToCopy = [
+					...this.assetsToCopy,
+					...entries,
+					...supplements.map(asset => `${module}/${asset}`),
+				]
 			}
 		)
 	}
@@ -91,7 +90,10 @@ export default class HtmlWebpackExternalsPlugin {
 
 		pluginsToApply.push(
 			new CopyWebpackPlugin(
-				this.assetsToCopy.map(asset => `node_modules/${asset}`)
+				this.assetsToCopy.map(asset => ({
+					from: `node_modules/${asset}`,
+					to: `${this.outputPath}/${asset}`,
+				}))
 			)
 		)
 
