@@ -12,12 +12,12 @@ const validateConfig = ajv.compile({
 				type: 'object',
 				properties: {
 					module: { type: 'string' },
-					global: { type: ['string', 'null'] },
 					entry: {
 						type: ['string', 'array'],
 						items: { type: 'string' },
 						minItems: 1,
 					},
+					global: { type: ['string', 'null'] },
 					supplements: {
 						type: 'array',
 						items: { type: 'string' },
@@ -28,6 +28,8 @@ const validateConfig = ajv.compile({
 			},
 			minItems: 1,
 		},
+		hash: { type: 'boolean' },
+		outputPath: { type: 'string' },
 	},
 	required: ['externals'],
 })
