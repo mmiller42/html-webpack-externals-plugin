@@ -1,0 +1,51 @@
+{
+	"name": "html-webpack-externals-plugin",
+	"version": "3.0.0",
+	"description": "Webpack plugin that works alongside HtmlWebpackPlugin to use pre-packaged vendor bundles",
+	"keywords": [
+		"htmlwebpackplugin",
+		"webpack",
+		"html",
+		"externals"
+	],
+	"main": "lib/index.js",
+	"scripts": {
+		"prepack": "npm run build",
+		"precommit": "lint-staged",
+		"build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
+		"watch": "babel src --out-dir lib --source-maps --copy-files --watch"
+	},
+	"lint-staged": {
+		"*.js": [
+			"prettier --write --use-tabs --no-semi --single-quote --trailing-comma es5 'src/**/*.js'",
+			"git add"
+		]
+	},
+	"engines": {
+		"node": ">=4.3.0 <5.0.0 || >=5.10"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mmiller42/html-webpack-externals-plugin.git"
+	},
+	"author": "Matt Miller <me@mmiller.me>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/mmiller42/html-webpack-externals-plugin/issues"
+	},
+	"homepage": "https://github.com/mmiller42/html-webpack-externals-plugin#readme",
+	"devDependencies": {
+		"babel-cli": "^6.24.1",
+		"babel-core": "^6.25.0",
+		"babel-plugin-transform-class-properties": "^6.24.1",
+		"babel-plugin-transform-object-rest-spread": "^6.23.0",
+		"babel-preset-env": "^1.6.0",
+		"husky": "^0.14.3",
+		"lint-staged": "^4.0.1",
+		"prettier": "^1.5.3"
+	},
+	"peerDependencies": {
+		"html-webpack-plugin": "^2.0.0",
+		"webpack": "^2.0.0"
+	}
+}
