@@ -4,7 +4,7 @@ import Ajv from 'ajv'
 
 export default class HtmlWebpackExternalsPlugin {
 	static validateArguments = (() => {
-		const ajv = new Ajv()
+		const ajv = new Ajv({ useDefaults: true })
 		const validateConfig = ajv.compile({
 			type: 'object',
 			properties: {
@@ -19,20 +19,21 @@ export default class HtmlWebpackExternalsPlugin {
 								items: { type: 'string' },
 								minItems: 1,
 							},
-							global: { type: ['string', 'null'] },
+							global: { type: ['string', 'null'], default: null },
 							supplements: {
 								type: 'array',
 								items: { type: 'string' },
+								default: [],
 							},
-							append: { type: 'boolean' },
+							append: { type: 'boolean', default: false },
 						},
 						required: ['module', 'entry'],
 					},
 					minItems: 1,
 				},
-				hash: { type: 'boolean' },
-				outputPath: { type: 'string' },
-				publicPath: { type: ['string', 'null'] },
+				hash: { type: 'boolean', default: false },
+				outputPath: { type: 'string', default: 'vendor' },
+				publicPath: { type: ['string', 'null'], default: null },
 			},
 			required: ['externals'],
 		})
@@ -54,44 +55,37 @@ export default class HtmlWebpackExternalsPlugin {
 		this.assetsToCopy = []
 		this.externals = {}
 
-		const {
-			externals,
-			hash = false,
-			outputPath = 'vendor',
-			publicPath = null,
-		} = config
+		const { externals, hash, outputPath, publicPath } = config
 		this.hash = hash
 		this.outputPath = outputPath
 		this.publicPath = publicPath
 
-		externals.forEach(
-			({ module, entry, global = null, supplements = [], append = false }) => {
-				this.externals[module] = global
+		externals.forEach(({ module, entry, global, supplements, append }) => {
+			this.externals[module] = global
 
-				const localEntries = []
+			const localEntries = []
 
-				const entries = (Array.isArray(entry) ? entry : [entry]).map(entry => {
-					if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry)) {
-						return entry
-					}
-					const localEntry = `${module}/${entry}`
-					localEntries.push(localEntry)
-					return localEntry
-				})
-
-				if (append) {
-					this.assetsToAppend = [...this.assetsToAppend, ...entries]
-				} else {
-					this.assetsToPrepend = [...this.assetsToPrepend, ...entries]
+			const entries = (Array.isArray(entry) ? entry : [entry]).map(entry => {
+				if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry)) {
+					return entry
 				}
+				const localEntry = `${module}/${entry}`
+				localEntries.push(localEntry)
+				return localEntry
+			})
 
-				this.assetsToCopy = [
-					...this.assetsToCopy,
-					...localEntries,
-					...supplements.map(asset => `${module}/${asset}`),
-				]
+			if (append) {
+				this.assetsToAppend = [...this.assetsToAppend, ...entries]
+			} else {
+				this.assetsToPrepend = [...this.assetsToPrepend, ...entries]
 			}
-		)
+
+			this.assetsToCopy = [
+				...this.assetsToCopy,
+				...localEntries,
+				...supplements.map(asset => `${module}/${asset}`),
+			]
+		})
 	}
 
 	apply(compiler) {
