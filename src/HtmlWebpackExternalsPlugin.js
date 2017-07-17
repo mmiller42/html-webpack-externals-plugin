@@ -1,5 +1,5 @@
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import HtmlWebpackIncludeAssetsPlugin from '../../html-webpack-include-assets-plugin'
+import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
 
 export default class HtmlWebpackExternalsPlugin {
