@@ -52,44 +52,232 @@ The constructor takes a configuration object with the following properties.
 | `publicPath` | string \| null | Override Webpack config's `publicPath` for the externals files, or `null` to use the default `output.publicPath` value. | `null` |
 | `files` | string \| array&lt;string&gt; \| null | If you have multiple instances of HtmlWebpackPlugin, use this to specify globs of which files you want to inject assets into. Will add assets to all files by default. | `null` |
 
-## Example
+## Examples
+
+### Local JS external example
+
+This example assumes `jquery` is installed in the app. It:
+
+1. adds `jquery` to your Webpack config's `externals` object to exclude it from your bundle, telling it to expect a global object called `jQuery` (on the `window` object)
+1. copies `node_modules/jquery/dist/jquery.min.js` to `<output path>/vendor/jquery/dist/jquery.min.js`
+1. adds `<script type="text/javascript" src="<public path>/vendor/jquery/dist/jquery.min.js"></script>` to your HTML file, before your chunks
 
 ```js
 new HtmlWebpackExternalsPlugin({
   externals: [
     {
-      // Specify that `react` module will be externalized (not bundled)
-      module: 'react',
-      // Copy `node_modules/react/dist/react.js` into output and insert `script` tag
-      entry: 'dist/react.js',
-      // Specify that the `react` module is accessed via `window.React`
-      global: 'React',
+      module: 'jquery',
+      entry: 'dist/jquery.min.js',
+      global: 'jQuery',
     },
-    {
-      module: 'react-dom',
-      entry: 'dist/react-dom.js',
-      global: 'ReactDOM',
-    },
+  ],
+})
+```
+
+### Local CSS external example
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
     {
       module: 'bootstrap',
-      // Specify multiple entry points to copy into output and insert a `link` tag for each
-      entry: ['dist/css/bootstrap.css', 'dist/css/bootstrap-theme.css'],
-      // Specify additional assets to copy into the outputPath, needed by this module
+      entry: 'dist/css/bootstrap.min.css',
+    },
+  ],
+})
+```
+
+### Local external with supplemental assets example
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. copies all contents of `node_modules/bootstrap/dist/fonts/` to `<output path>/vendor/bootstrap/dist/fonts/`
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
       supplements: ['dist/fonts/'],
     },
-    {
-      module: 'material-icons',
-      // For entry points without file extensions, pass an object with `path` and `type`
-      // properties to manually specify the type (either `js` or `css`)
-      entry: {
-        path: 'https://fonts.googleapis.com/css?family=Material+Icons',
-        type: 'css'
-      }
-    }
   ],
-  // Enable cache-busting on the module entry files (can cause issues with CDNs)
+})
+```
+
+### CDN example
+
+This example does not require the `jquery` module to be installed. It:
+
+1. adds `jquery` to your Webpack config's `externals` object to exclude it from your bundle, telling it to expect a global object called `jQuery` (on the `window` object)
+1. adds `<script type="text/javascript" src="https://unpkg.com/jquery@3.2.1/dist/jquery.min.js"></script>` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'jquery',
+      entry: 'https://unpkg.com/jquery@3.2.1/dist/jquery.min.js',
+      global: 'jQuery',
+    },
+  ],
+})
+```
+
+### URL without implicit extension example
+
+Some CDN URLs don't have file extensions, so the plugin cannot determine whether to use a `link` tag or a `script` tag. In these situations, you can pass an object in place of the `entry` property that specifies the path and type explicitly.
+
+This example uses the Google Fonts API to load the Roboto font. It:
+
+1. adds `<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'google-roboto',
+      entry: {
+        path: 'https://fonts.googleapis.com/css?family=Roboto',
+        type: 'css',
+      },
+    },
+  ],
+})
+```
+
+### Module with multiple entry points example
+
+Some modules require more than one distro file to be loaded. For example, Bootstrap has a normal and a theme CSS entry point.
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. copies `node_modules/bootstrap/dist/css/bootstrap-theme.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap-theme.min.css`
+1. copies all contents of `node_modules/bootstrap/dist/fonts/` to `<output path>/vendor/bootstrap/dist/fonts/`
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: ['dist/css/bootstrap.min.css', 'dist/css/bootstrap-theme.min.css'],
+      supplements: ['dist/fonts/'],
+    },
+  ],
+})
+```
+
+### Appended assets example
+
+Sometimes you want to load the external after your Webpack chunks instead of before.
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, *after* your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
+      append: true,
+    },
+  ],
+})
+```
+
+### Cache-busting with hashes example
+
+You can configure the plugin to append hashes to the query string on the HTML tags so that, when upgrading modules, a new hash is computed, busting your app users' caches. **Do not use this in tandem with CDNs, only when using local externals.**
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="<public path>/vendor/bootstrap/dist/css/bootstrap.min.css?<unique hash>" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
+    },
+  ],
   hash: true,
-  // Specify the directory within the outputPath to copy externals' assets into
-  outputPath: 'vendors',
+})
+```
+
+### Customizing output path example
+
+By default, local externals are copied into the Webpack output directory, into a subdirectory called `vendor`. This is configurable.
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/thirdparty/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="<public path>/thirdparty/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
+    },
+  ],
+  outputPath: 'thirdparty',
+})
+```
+
+### Customizing public path example
+
+By default, local externals are resolved from the same root path as your Webpack configuration file's `output.publicPath`, concatenated with the `outputPath` variable. This is configurable.
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="/public/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
+    },
+  ],
+  publicPath: '/assets/',
+})
+```
+
+### Specifying which HTML files to affect example
+
+If you are using multiple instances of html-webpack-plugin, by default the assets will be injected into every file. This is configurable.
+
+This example assumes `bootstrap` is installed in the app. It:
+
+1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
+1. adds `<link href="/public/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to *only the `about.html` file*, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'bootstrap',
+      entry: 'dist/css/bootstrap.min.css',
+    },
+  ],
+  files: ['about.html'],
 })
 ```
