@@ -223,6 +223,8 @@ new HtmlWebpackExternalsPlugin({
 
 By default, local externals are copied into the Webpack output directory, into a subdirectory called `vendor`. This is configurable.
 
+Do not include a trailing slash or leading slash in your output path, they are concatenated automatically by the plugin.
+
 This example assumes `bootstrap` is installed in the app. It:
 
 1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/thirdparty/bootstrap/dist/css/bootstrap.min.css`
@@ -243,6 +245,8 @@ new HtmlWebpackExternalsPlugin({
 ### Customizing public path example
 
 By default, local externals are resolved from the same root path as your Webpack configuration file's `output.publicPath`, concatenated with the `outputPath` variable. This is configurable.
+
+You should include a trailing slash in your public path, and a leading slash if you want it to resolve assets from the domain root.
 
 This example assumes `bootstrap` is installed in the app. It:
 
