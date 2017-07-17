@@ -1,60 +1,12 @@
 import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
+import configSchema from './configSchema.json'
 
 export default class HtmlWebpackExternalsPlugin {
   static validateArguments = (() => {
     const ajv = new Ajv({ useDefaults: true })
-    const validateConfig = ajv.compile({
-      type: 'object',
-      properties: {
-        externals: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              module: { type: 'string' },
-              entry: {
-                type: ['string', 'array', 'object'],
-                items: {
-                  type: ['string', 'object'],
-                  properties: {
-                    path: { type: 'string' },
-                    type: { type: 'string', enum: ['js', 'css'] },
-                  },
-                  required: ['path', 'type'],
-                },
-                minItems: 1,
-                properties: {
-                  path: { type: 'string' },
-                  type: { type: 'string', enum: ['js', 'css'] },
-                },
-                required: ['path', 'type'],
-              },
-              global: { type: ['string', 'null'], default: null },
-              supplements: {
-                type: 'array',
-                items: { type: 'string' },
-                default: [],
-              },
-              append: { type: 'boolean', default: false },
-            },
-            required: ['module', 'entry'],
-          },
-          minItems: 1,
-        },
-        hash: { type: 'boolean', default: false },
-        outputPath: { type: 'string', default: 'vendor' },
-        publicPath: { type: ['string', 'null'], default: null },
-        files: {
-          type: ['string', 'array', 'null'],
-          items: { type: 'string' },
-          minItems: 1,
-          default: null,
-        },
-      },
-      required: ['externals'],
-    })
+    const validateConfig = ajv.compile(configSchema)
 
     return config => {
       if (!validateConfig(config)) {
