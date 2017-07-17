@@ -1,5 +1,5 @@
 import CopyWebpackPlugin from 'copy-webpack-plugin'
-import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
+import HtmlWebpackIncludeAssetsPlugin from '../../html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
 
 export default class HtmlWebpackExternalsPlugin {
@@ -15,9 +15,21 @@ export default class HtmlWebpackExternalsPlugin {
 						properties: {
 							module: { type: 'string' },
 							entry: {
-								type: ['string', 'array'],
-								items: { type: 'string' },
+								type: ['string', 'array', 'object'],
+								items: {
+									type: ['string', 'object'],
+									properties: {
+										path: { type: 'string' },
+										type: { type: 'string', enum: ['js', 'css'] },
+									},
+									required: ['path', 'type'],
+								},
 								minItems: 1,
+								properties: {
+									path: { type: 'string' },
+									type: { type: 'string', enum: ['js', 'css'] },
+								},
+								required: ['path', 'type'],
 							},
 							global: { type: ['string', 'null'], default: null },
 							supplements: {
@@ -66,12 +78,15 @@ export default class HtmlWebpackExternalsPlugin {
 			const localEntries = []
 
 			const entries = (Array.isArray(entry) ? entry : [entry]).map(entry => {
-				if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry)) {
+				if (typeof entry === 'string') {
+					entry = { path: entry, type: null }
+				}
+				if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry.path)) {
 					return entry
 				}
-				const localEntry = `${module}/${entry}`
+				const localEntry = `${module}/${entry.path}`
 				localEntries.push(localEntry)
-				return localEntry
+				return { ...entry, path: localEntry }
 			})
 
 			if (append) {
@@ -122,9 +137,12 @@ export default class HtmlWebpackExternalsPlugin {
 					new HtmlWebpackIncludeAssetsPlugin({
 						assets: assets.map(
 							asset =>
-								HtmlWebpackExternalsPlugin.URL_ENTRY.test(asset)
+								HtmlWebpackExternalsPlugin.URL_ENTRY.test(asset.path)
 									? asset
-									: `${publicPath}${this.outputPath}/${asset}`
+									: {
+											...asset,
+											path: `${publicPath}${this.outputPath}/${asset.path}`,
+										}
 						),
 						append,
 						hash: this.hash,

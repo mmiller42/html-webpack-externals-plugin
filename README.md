@@ -43,7 +43,7 @@ The constructor takes a configuration object with the following properties.
 | --- | --- | --- | --- |
 | `externals` | array&lt;object&gt; | An array of vendor modules that will be excluded from your Webpack bundle and added as `script` or `link` tags in your HTML output. | *None* |
 | `externals[].module` | string | The name of the vendor module. This should match the package name, e.g. if you are writing `import React from 'react'`, this would be `react`. | *None* |
-| `externals[].entry` | string \| array&lt;string&gt; | The path, relative to the vendor module directory, to its pre-bundled distro file. e.g. for React, use `dist/react.js`, since the file exists at `node_modules/react/dist/react.js`. Specify an array if there are multiple CSS/JS files to inject. To use a CDN instead, simply use a fully qualified URL beginning with `http://`, `https://`, or `//`. | *None* |
+| `externals[].entry` | string \| array&lt;string&gt; \| object \| array&lt;object \| string&gt; | The path, relative to the vendor module directory, to its pre-bundled distro file. e.g. for React, use `dist/react.js`, since the file exists at `node_modules/react/dist/react.js`. Specify an array if there are multiple CSS/JS files to inject. To use a CDN instead, simply use a fully qualified URL beginning with `http://`, `https://`, or `//`.<br><br>For entries whose type (JS or CSS) cannot be inferred by file extension, pass an object such as `{ path: 'https://some/url', type: 'css' }` (or `type: 'js'`). | *None* |
 | `externals[].global` | string \| null | For JavaScript modules, this is the name of the object globally exported by the vendor's dist file. e.g. for React, use `React`, since `react.js` creates a `window.React` global. For modules without an export (such as CSS), omit this property or use `null`. | `null` |
 | `externals[].supplements` | array&lt;string&gt; | For modules that require additional resources, specify globs of files to copy over to the output. e.g. for Bootstrap CSS, use `['dist/fonts/']`, since Glyphicon fonts are referenced in the CSS and exist at `node_modules/bootstrap/dist/fonts/`. | `[]` |
 | `externals[].append` | boolean | Set to true to inject this module after your Webpack bundles. | `false` |
@@ -76,6 +76,15 @@ new HtmlWebpackExternalsPlugin({
       // Specify additional assets to copy into the outputPath, needed by this module
       supplements: ['dist/fonts/'],
     },
+    {
+      module: 'material-icons',
+      // For entry points without file extensions, pass an object with `path` and `type`
+      // properties to manually specify the type (either `js` or `css`)
+      entry: {
+        path: 'https://fonts.googleapis.com/css?family=Material+Icons',
+        type: 'css'
+      }
+    }
   ],
   // Enable cache-busting on the module entry files
   hash: true,
