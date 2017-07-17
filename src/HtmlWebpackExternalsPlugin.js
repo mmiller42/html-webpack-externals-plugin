@@ -34,6 +34,12 @@ export default class HtmlWebpackExternalsPlugin {
 				hash: { type: 'boolean', default: false },
 				outputPath: { type: 'string', default: 'vendor' },
 				publicPath: { type: ['string', 'null'], default: null },
+				files: {
+					type: ['string', 'array', 'null'],
+					items: { type: 'string' },
+					minItems: 1,
+					default: null,
+				},
 			},
 			required: ['externals'],
 		})
@@ -55,10 +61,11 @@ export default class HtmlWebpackExternalsPlugin {
 		this.assetsToCopy = []
 		this.externals = {}
 
-		const { externals, hash, outputPath, publicPath } = config
+		const { externals, hash, outputPath, publicPath, files } = config
 		this.hash = hash
 		this.outputPath = outputPath
 		this.publicPath = publicPath
+		this.files = files
 
 		externals.forEach(({ module, entry, global, supplements, append }) => {
 			this.externals[module] = global
@@ -128,6 +135,7 @@ export default class HtmlWebpackExternalsPlugin {
 						),
 						append,
 						hash: this.hash,
+						files: this.files,
 						publicPath: '',
 					})
 				)
