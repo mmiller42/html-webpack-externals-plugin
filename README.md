@@ -50,6 +50,7 @@ The constructor takes a configuration object with the following properties.
 | `hash` | boolean | Set to true to append the injected module distro paths with a unique hash for cache-busting. | `false` |
 | `outputPath` | string | The path (relative to your Webpack `outputPath`) to store externals copied over by this plugin. | `vendor` |
 | `publicPath` | string \| null | Override Webpack config's `publicPath` for the externals files, or `null` to use the default `output.publicPath` value. | `null` |
+| `files` | string \| array&lt;string&gt; \| null | If you have multiple instances of HtmlWebpackPlugin, use this to specify globs of which files you want to inject assets into. Will add assets to all files by default. | `null` |
 
 ## Example
 
