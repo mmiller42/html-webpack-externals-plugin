@@ -30,6 +30,7 @@ const validateConfig = ajv.compile({
 		},
 		hash: { type: 'boolean' },
 		outputPath: { type: 'string' },
+		publicPath: { type: ['string', 'boolean'] },
 	},
 	required: ['externals'],
 })
@@ -49,9 +50,15 @@ export default class HtmlWebpackExternalsPlugin {
 		this.assetsToCopy = []
 		this.externals = {}
 
-		const { externals, hash = false, outputPath = 'vendor' } = config
+		const {
+			externals,
+			hash = false,
+			outputPath = 'vendor',
+			publicPath = true,
+		} = config
 		this.hash = hash
 		this.outputPath = outputPath
+		this.publicPath = publicPath
 
 		externals.forEach(
 			({ module, entry, global = null, supplements = [], append = false }) => {
@@ -99,29 +106,21 @@ export default class HtmlWebpackExternalsPlugin {
 			)
 		)
 
-		if (this.assetsToPrepend.length) {
-			pluginsToApply.push(
-				new HtmlWebpackIncludeAssetsPlugin({
-					assets: this.assetsToPrepend.map(
-						asset => `${this.outputPath}/${asset}`
-					),
-					append: false,
-					hash: this.hash,
-				})
-			)
+		const createAssetsPlugin = (assets, append) => {
+			if (assets.length) {
+				pluginsToApply.push(
+					new HtmlWebpackIncludeAssetsPlugin({
+						assets: assets.map(asset => `${this.outputPath}/${asset}`),
+						append,
+						hash: this.hash,
+						publicPath: this.publicPath,
+					})
+				)
+			}
 		}
 
-		if (this.assetsToAppend.length) {
-			pluginsToApply.push(
-				new HtmlWebpackIncludeAssetsPlugin({
-					assets: this.assetsToAppend.map(
-						asset => `${this.outputPath}/${asset}`
-					),
-					append: true,
-					hash: this.hash,
-				})
-			)
-		}
+		createAssetsPlugin(this.assetsToPrepend, false)
+		createAssetsPlugin(this.assetsToAppend, true)
 
 		pluginsToApply.forEach(plugin => plugin.apply(compiler))
 	}

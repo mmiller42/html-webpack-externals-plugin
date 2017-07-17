@@ -49,6 +49,7 @@ The constructor takes a configuration object with the following properties.
 | `externals[].append` | boolean | Set to true to inject this module after your Webpack bundles. | `false` |
 | `hash` | boolean | Set to true to append the injected module distro paths with a unique hash for cache-busting. | `false` |
 | `outputPath` | string | The path (relative to your Webpack `outputPath`) to store externals copied over by this plugin. | `vendor` |
+| `publicPath` | string \| boolean | Override Webpack config's `publicPath` for the externals files, or `true` to use the default. | `true` |
 
 ## Example
 
