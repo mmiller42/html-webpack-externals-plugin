@@ -1,17 +1,17 @@
 {
-	"presets": [
-		[
-			"babel-preset-env",
-			{
-				"targets": {
-					"node": "4.3.0"
-				}
-			}
-		]
-	],
-	"plugins": [
-		"babel-plugin-add-module-exports",
-		"babel-plugin-transform-class-properties",
-		"babel-plugin-transform-object-rest-spread"
-	]
+  "presets": [
+    [
+      "babel-preset-env",
+      {
+        "targets": {
+          "node": "4.3.0"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "babel-plugin-add-module-exports",
+    "babel-plugin-transform-class-properties",
+    "babel-plugin-transform-object-rest-spread"
+  ]
 }

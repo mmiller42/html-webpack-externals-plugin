@@ -1,8 +1,8 @@
 root = true
 
-[src/**.js]
-indent_style = tab
-indent_size = tab
+[{src/**.js,*.{js,json},.babelrc,*.md}]
+indent_style = space
+indent_size = 2
 end_of_line = lf
 charset = utf-8
 trim_trailing_whitespace = true
