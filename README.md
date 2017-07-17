@@ -86,7 +86,7 @@ new HtmlWebpackExternalsPlugin({
       }
     }
   ],
-  // Enable cache-busting on the module entry files
+  // Enable cache-busting on the module entry files (can cause issues with CDNs)
   hash: true,
   // Specify the directory within the outputPath to copy externals' assets into
   outputPath: 'vendors',
