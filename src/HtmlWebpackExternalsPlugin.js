@@ -2,45 +2,47 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
 
-const ajv = new Ajv()
-const validateConfig = ajv.compile({
-	type: 'object',
-	properties: {
-		externals: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					module: { type: 'string' },
-					entry: {
-						type: ['string', 'array'],
-						items: { type: 'string' },
-						minItems: 1,
-					},
-					global: { type: ['string', 'null'] },
-					supplements: {
-						type: 'array',
-						items: { type: 'string' },
-					},
-					append: { type: 'boolean' },
-				},
-				required: ['module', 'entry'],
-			},
-			minItems: 1,
-		},
-		hash: { type: 'boolean' },
-		outputPath: { type: 'string' },
-		publicPath: { type: ['string', 'null'] },
-	},
-	required: ['externals'],
-})
-
 export default class HtmlWebpackExternalsPlugin {
-	static validateArguments(config) {
-		if (!validateConfig(config)) {
-			throw new TypeError(ajv.errorsText(validateConfig.errors))
+	static validateArguments = (() => {
+		const ajv = new Ajv()
+		const validateConfig = ajv.compile({
+			type: 'object',
+			properties: {
+				externals: {
+					type: 'array',
+					items: {
+						type: 'object',
+						properties: {
+							module: { type: 'string' },
+							entry: {
+								type: ['string', 'array'],
+								items: { type: 'string' },
+								minItems: 1,
+							},
+							global: { type: ['string', 'null'] },
+							supplements: {
+								type: 'array',
+								items: { type: 'string' },
+							},
+							append: { type: 'boolean' },
+						},
+						required: ['module', 'entry'],
+					},
+					minItems: 1,
+				},
+				hash: { type: 'boolean' },
+				outputPath: { type: 'string' },
+				publicPath: { type: ['string', 'null'] },
+			},
+			required: ['externals'],
+		})
+
+		return config => {
+			if (!validateConfig(config)) {
+				throw new TypeError(ajv.errorsText(validateConfig.errors))
+			}
 		}
-	}
+	})()
 
 	static URL_ENTRY = /^(http:|https:)?\/\//
 
