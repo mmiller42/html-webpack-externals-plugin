@@ -30,7 +30,7 @@ const validateConfig = ajv.compile({
 		},
 		hash: { type: 'boolean' },
 		outputPath: { type: 'string' },
-		publicPath: { type: ['string', 'boolean'] },
+		publicPath: { type: ['string', 'null'] },
 	},
 	required: ['externals'],
 })
@@ -41,6 +41,8 @@ export default class HtmlWebpackExternalsPlugin {
 			throw new TypeError(ajv.errorsText(validateConfig.errors))
 		}
 	}
+
+	static URL_ENTRY = /^(http:|https:)?\/\//
 
 	constructor(config) {
 		HtmlWebpackExternalsPlugin.validateArguments(config)
@@ -54,7 +56,7 @@ export default class HtmlWebpackExternalsPlugin {
 			externals,
 			hash = false,
 			outputPath = 'vendor',
-			publicPath = true,
+			publicPath = null,
 		} = config
 		this.hash = hash
 		this.outputPath = outputPath
@@ -64,9 +66,16 @@ export default class HtmlWebpackExternalsPlugin {
 			({ module, entry, global = null, supplements = [], append = false }) => {
 				this.externals[module] = global
 
-				const entries = (Array.isArray(entry) ? entry : [entry]).map(
-					entry => `${module}/${entry}`
-				)
+				const localEntries = []
+
+				const entries = (Array.isArray(entry) ? entry : [entry]).map(entry => {
+					if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry)) {
+						return entry
+					}
+					const localEntry = `${module}/${entry}`
+					localEntries.push(localEntry)
+					return localEntry
+				})
 
 				if (append) {
 					this.assetsToAppend = [...this.assetsToAppend, ...entries]
@@ -76,7 +85,7 @@ export default class HtmlWebpackExternalsPlugin {
 
 				this.assetsToCopy = [
 					...this.assetsToCopy,
-					...entries,
+					...localEntries,
 					...supplements.map(asset => `${module}/${asset}`),
 				]
 			}
@@ -95,6 +104,11 @@ export default class HtmlWebpackExternalsPlugin {
 			}
 		}
 
+		const publicPath =
+			this.publicPath == null
+				? compiler.options.output.publicPath
+				: this.publicPath
+
 		const pluginsToApply = []
 
 		pluginsToApply.push(
@@ -110,10 +124,15 @@ export default class HtmlWebpackExternalsPlugin {
 			if (assets.length) {
 				pluginsToApply.push(
 					new HtmlWebpackIncludeAssetsPlugin({
-						assets: assets.map(asset => `${this.outputPath}/${asset}`),
+						assets: assets.map(
+							asset =>
+								HtmlWebpackExternalsPlugin.URL_ENTRY.test(asset)
+									? asset
+									: `${publicPath}${this.outputPath}/${asset}`
+						),
 						append,
 						hash: this.hash,
-						publicPath: this.publicPath,
+						publicPath: '',
 					})
 				)
 			}
