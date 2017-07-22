@@ -46,8 +46,7 @@
     "prettier": "^1.5.3"
   },
   "peerDependencies": {
-    "html-webpack-plugin": "^2.0.0",
-    "webpack": "^2.0.0"
+    "html-webpack-plugin": "^2.0.0"
   },
   "dependencies": {
     "ajv": "^5.2.2",
