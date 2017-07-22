@@ -1,0 +1,22 @@
+machine:
+  environment:
+    NODE_ENV: test
+
+dependencies:
+  override:
+    - npm install
+    - npm install webpack@^3.0.0 html-webpack-plugin@^2.0.0 --no-save
+
+compile:
+  override:
+    - npm run build
+
+test:
+  override:
+    - npm test
+
+deployment:
+  artifacts:
+    tag: /^v\d+\.\d+\.\d+$/
+    commands:
+      - npm publish
