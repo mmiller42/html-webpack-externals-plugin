@@ -7,13 +7,21 @@ jobs:
 
     steps:
       - checkout
-      - run: sudo npm install -g npm@latest
+      - run:
+          name: update-npm
+          command: sudo npm install -g npm@latest
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
-      - run: npm install
+      - run:
+          name: npm-install
+          command: npm install
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-      - run: npm test
-      - deploy: if [ "${CIRCLE_TAG}" == v* ]; then npm publish; fi
+      - run:
+          name: npm-test
+          command: npm test
+      - deploy:
+          name: npm-publish
+          command: if [ "${CIRCLE_TAG}" == v* ]; then npm publish; fi
