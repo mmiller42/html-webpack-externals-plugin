@@ -11,7 +11,7 @@
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
-    "*": [
+    "*.{js,json}": [
       "prettier --write --no-semi --single-quote --trailing-comma es5 '{src/**/*.{js,json},test/**/*.js,*.json}'",
       "git add"
     ]
