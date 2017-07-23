@@ -9,7 +9,10 @@ jobs:
       - checkout
       - run:
           name: update-npm
-          command: sudo npm install -g npm@latest
+          command:
+            - npm install npm@latest --no-save
+            - rm -rf /usr/local/lib/node_modules/npm
+            - mv node_modules/npm /usr/local/lib/node_modules/npm
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
