@@ -1,0 +1,126 @@
+import path from 'path'
+import fs from 'fs'
+import assert from 'assert'
+import webpack from 'webpack'
+import ExtractTextPlugin from 'extract-text-webpack-plugin'
+import escapeRegExp from 'escape-string-regexp'
+import rimraf from 'rimraf'
+
+const OUTPUT_PATH = path.resolve(__dirname, '..', 'tmp')
+
+export function cleanUp() {
+  return promisify(rimraf, OUTPUT_PATH)
+}
+
+export function runWebpack(...plugins) {
+  return promisify(webpack, {
+    entry: {
+      app: path.resolve(__dirname, '..', 'fixtures', 'app.js'),
+      style: path.resolve(__dirname, '..', 'fixtures', 'style.css'),
+    },
+    output: {
+      path: OUTPUT_PATH,
+      filename: '[name].js',
+    },
+    module: {
+      loaders: [
+        {
+          test: /\.css$/,
+          loader: ExtractTextPlugin.extract({ use: 'css-loader' }),
+        },
+      ],
+    },
+    plugins: [new ExtractTextPlugin({ filename: '[name].css' }), ...plugins],
+  }).then(stats => {
+    assert.strictEqual(
+      stats.hasErrors(),
+      false,
+      stats.toJson().errors.toString()
+    )
+    return stats
+  })
+}
+
+export function checkBundleExcludes(external) {
+  return promisify(
+    fs.readFile,
+    path.join(OUTPUT_PATH, 'app.js'),
+    'utf8'
+  ).then(contents => {
+    assert.ok(
+      contents.indexOf(`module.exports = ${external}`) > -1,
+      `${external} was not excluded from the bundle`
+    )
+  })
+}
+
+export function checkCopied(file) {
+  return promisify(fs.access, path.join(OUTPUT_PATH, file))
+}
+
+export function checkHtmlIncludes(
+  file,
+  type,
+  append = false,
+  htmlFile = 'index.html'
+) {
+  return promisify(
+    fs.readFile,
+    path.join(OUTPUT_PATH, htmlFile),
+    'utf8'
+  ).then(contents => {
+    if (type === 'js') {
+      assert.ok(
+        contents.match(new RegExp(`<script.*src="${escapeRegExp(file)}".*>`)),
+        `${file} script was not inserted into the HTML output`
+      )
+    } else if (type === 'css') {
+      assert.ok(
+        contents.match(new RegExp(`<link.*href="${escapeRegExp(file)}".*>`)),
+        `${file} link was not inserted into the HTML output`
+      )
+    }
+
+    assert.ok(
+      inequal(
+        append ? '<' : '>',
+        contents.indexOf(type === 'js' ? 'app.js' : 'style.css'),
+        contents.indexOf(file)
+      ),
+      `${file} should have been inserted ${append
+        ? 'after'
+        : 'before'} the bundle`
+    )
+  })
+}
+
+export function promisify(fn, ...args) {
+  return new Promise((resolve, reject) => {
+    fn(...args, (err, result) => {
+      if (err) {
+        reject(err)
+        return
+      }
+      resolve(result)
+    })
+  })
+}
+
+function inequal(operator, a, b) {
+  switch (operator) {
+    case '<':
+      return a < b
+    case '>':
+      return a > b
+    case '<=':
+      return a <= b
+    case '>=':
+      return a >= b
+    case '!=':
+      return a != b
+    case '!==':
+      return a !== b
+    default:
+      throw new Error(`Unknown operator ${operator}`)
+  }
+}

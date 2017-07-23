@@ -74,10 +74,15 @@ export default class HtmlWebpackExternalsPlugin {
       }
     }
 
-    const publicPath =
-      this.publicPath == null
-        ? compiler.options.output.publicPath
-        : this.publicPath
+    const publicPath = (() => {
+      if (this.publicPath != null) {
+        return this.publicPath
+      } else if (compiler.options.output.publicPath != null) {
+        return compiler.options.output.publicPath
+      } else {
+        return ''
+      }
+    })()
 
     const pluginsToApply = []
 

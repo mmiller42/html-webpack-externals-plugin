@@ -251,7 +251,7 @@ You should include a trailing slash in your public path, and a leading slash if 
 This example assumes `bootstrap` is installed in the app. It:
 
 1. copies `node_modules/bootstrap/dist/css/bootstrap.min.css` to `<output path>/vendor/bootstrap/dist/css/bootstrap.min.css`
-1. adds `<link href="/public/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
+1. adds `<link href="/assets/vendor/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">` to your HTML file, before your chunks
 
 ```js
 new HtmlWebpackExternalsPlugin({
