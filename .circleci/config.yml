@@ -18,7 +18,7 @@ jobs:
             sudo mv node_modules/npm /usr/local/lib/node_modules/npm
       - run:
           name: Install greenkeeper-lockfile
-          command: npm install -g greenkeeper-lockfile@1
+          command: sudo npm install -g greenkeeper-lockfile@1
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
