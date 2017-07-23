@@ -1,6 +1,6 @@
 {
   "name": "html-webpack-externals-plugin",
-  "version": "3.3.5",
+  "version": "3.3.4",
   "description": "Webpack plugin that works alongside html-webpack-plugin to use pre-packaged vendor bundles.",
   "keywords": [
     "htmlwebpackplugin",
