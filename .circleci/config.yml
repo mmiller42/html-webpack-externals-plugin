@@ -16,15 +16,21 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: npm-install
+          name: install-dependencies
           command: npm install
+      - run:
+          name: install-peer-dependencies
+          command: npm install webpack@^3.0.0 html-webpack-plugin@^2.0.0 --no-save
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
       - run:
-          name: npm-test
+          name: build
+          command: npm run build
+      - run:
+          name: test
           command: npm test
       - deploy:
-          name: npm-publish
+          name: publish
           command: if [ "${CIRCLE_TAG}" == v* ]; then npm publish; fi
