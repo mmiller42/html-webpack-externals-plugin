@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: update-npm
+          name: Update npm
           command: |
             npm install npm@latest --no-save &&
             sudo rm -rf /usr/local/lib/node_modules/npm &&
@@ -16,21 +16,21 @@ jobs:
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
-          name: install-dependencies
+          name: Install dependencies
           command: npm install
       - run:
-          name: install-peer-dependencies
+          name: Install peerDependencies
           command: npm install webpack@^3.0.0 html-webpack-plugin@^2.0.0 --no-save
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
       - run:
-          name: build
+          name: Build
           command: npm run build
       - run:
-          name: test
+          name: Test
           command: npm test
       - deploy:
-          name: publish
+          name: Publish
           command: if [ "${CIRCLE_TAG}" == v* ]; then npm publish; fi

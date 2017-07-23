@@ -12,13 +12,13 @@
   "scripts": {
     "prepack": "npm run build",
     "precommit": "lint-staged",
-    "test": "mocha",
+    "test": "mocha --require babel-register",
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
     "*.js": [
-      "prettier --write --no-semi --single-quote --trailing-comma es5 '{src/**/*.{js,json},*.json}'",
+      "prettier --write --no-semi --single-quote --trailing-comma es5 '{src/**/*.{js,json},test/**/*.js,*.json}'",
       "git add"
     ]
   },
@@ -42,8 +42,10 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
+    "babel-register": "^6.24.1",
     "husky": "^0.14.3",
     "lint-staged": "^4.0.1",
+    "mocha": "^3.4.2",
     "prettier": "^1.5.3"
   },
   "peerDependencies": {
