@@ -1,4 +1,4 @@
-# html-webpack-externals-plugin
+# html-webpack-externals-plugin [![CircleCI](https://circleci.com/gh/mmiller42/html-webpack-externals-plugin.svg?style=svg)](https://circleci.com/gh/mmiller42/html-webpack-externals-plugin)
 
 Webpack plugin that works alongside [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin) to use pre-packaged vendor bundles.
 

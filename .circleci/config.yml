@@ -8,6 +8,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Authenticate to npm registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run:
           name: Update npm
           command: |
             npm install npm@latest --no-save &&
