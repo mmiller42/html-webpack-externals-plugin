@@ -2,22 +2,16 @@
   "name": "html-webpack-externals-plugin",
   "version": "3.3.5",
   "description": "Webpack plugin that works alongside html-webpack-plugin to use pre-packaged vendor bundles.",
-  "keywords": [
-    "htmlwebpackplugin",
-    "webpack",
-    "html",
-    "externals"
-  ],
+  "keywords": ["htmlwebpackplugin", "webpack", "html", "externals"],
   "main": "lib/index.js",
   "scripts": {
-    "prepack": "npm run build",
     "precommit": "lint-staged",
     "test": "mocha --require babel-register",
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
-    "*.js": [
+    "*": [
       "prettier --write --no-semi --single-quote --trailing-comma es5 '{src/**/*.{js,json},test/**/*.js,*.json}'",
       "git add"
     ]
