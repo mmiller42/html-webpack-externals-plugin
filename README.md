@@ -31,7 +31,7 @@ plugins: [
   new HtmlWebpackPlugin(),
   new HtmlWebpackExternalsPlugin(
     // See API section
-  )
+  ),
 ]
 ```
 
