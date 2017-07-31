@@ -51,6 +51,7 @@ The constructor takes a configuration object with the following properties.
 | `outputPath` | string | The path (relative to your Webpack `outputPath`) to store externals copied over by this plugin. | `vendor` |
 | `publicPath` | string \| null | Override Webpack config's `publicPath` for the externals files, or `null` to use the default `output.publicPath` value. | `null` |
 | `files` | string \| array&lt;string&gt; \| null | If you have multiple instances of HtmlWebpackPlugin, use this to specify globs of which files you want to inject assets into. Will add assets to all files by default. | `null` |
+| `enabled` | boolean | Set to `false` to disable the plugin (useful for disabling in development mode). | `true` |
 
 ## Examples
 
@@ -283,5 +284,22 @@ new HtmlWebpackExternalsPlugin({
     },
   ],
   files: ['about.html'],
+})
+```
+
+### Disabling the plugin
+
+Sometimes you only want the plugin to be activated in certain environments. Rather than create separate Webpack configs or mess with splicing the plugins array, simply set the `enabled` option to `false` to disable the externals plugin entirely.
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'jquery',
+      entry: 'dist/jquery.min.js',
+      global: 'jQuery',
+    },
+  ],
+  enabled: process.env.NODE_ENV === 'production',
 })
 ```

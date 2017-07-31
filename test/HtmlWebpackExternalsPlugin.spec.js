@@ -1,4 +1,5 @@
 import assert from 'assert'
+import AssertionError from 'assertion-error'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import HtmlWebpackExternalsPlugin from '../lib/'
 import {
@@ -288,11 +289,58 @@ describe('HtmlWebpackExternalsPlugin', function() {
           )
             .then(() =>
               reject(
-                'index.html should not have had the assets inserted into the HTML'
+                new AssertionError(
+                  'index.html should not have had the assets inserted into the HTML'
+                )
               )
             )
-            .catch(() => resolve())
+            .catch(resolve)
         })
       })
+  })
+
+  it('does not run when enabled is false', function() {
+    const wp = runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'jquery',
+            entry: 'dist/jquery.min.js',
+            global: 'jQuery',
+          },
+        ],
+        enabled: false,
+      })
+    )
+
+    return Promise.all([
+      new Promise((resolve, reject) => {
+        wp
+          .then(() => checkBundleExcludes('jQuery'))
+          .then(() =>
+            reject(new AssertionError('Plugin should not have excluded jQuery'))
+          )
+          .catch(resolve)
+      }),
+      new Promise((resolve, reject) => {
+        wp
+          .then(() => checkCopied('vendor/jquery/dist/jquery.min.js'))
+          .then(() =>
+            reject(new AssertionError('Plugin should not have copied jQuery'))
+          )
+          .catch(resolve)
+      }),
+      new Promise((resolve, reject) => {
+        wp
+          .then(() =>
+            checkHtmlIncludes('vendor/jquery/dist/jquery.min.js', 'js')
+          )
+          .then(() =>
+            reject(new AssertionError('Plugin should not have injected jQuery'))
+          )
+          .catch(resolve)
+      }),
+    ])
   })
 })

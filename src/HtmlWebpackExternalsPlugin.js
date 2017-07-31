@@ -25,11 +25,12 @@ export default class HtmlWebpackExternalsPlugin {
     this.assetsToCopy = []
     this.externals = {}
 
-    const { externals, hash, outputPath, publicPath, files } = config
+    const { externals, hash, outputPath, publicPath, files, enabled } = config
     this.hash = hash
     this.outputPath = outputPath
     this.publicPath = publicPath
     this.files = files
+    this.enabled = enabled
 
     externals.forEach(({ module, entry, global, supplements, append }) => {
       this.externals[module] = global
@@ -63,6 +64,10 @@ export default class HtmlWebpackExternalsPlugin {
   }
 
   apply(compiler) {
+    if (!this.enabled) {
+      return
+    }
+
     if (!compiler.options.externals) {
       compiler.options.externals = this.externals
     } else if (Array.isArray(compiler.options.externals)) {

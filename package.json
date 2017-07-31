@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/mmiller42/html-webpack-externals-plugin#readme",
   "devDependencies": {
+    "assertion-error": "^1.0.2",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
     "babel-plugin-add-module-exports": "^0.2.1",

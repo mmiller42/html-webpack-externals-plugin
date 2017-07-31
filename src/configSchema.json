@@ -75,6 +75,10 @@
       },
       "minItems": 1,
       "default": null
+    },
+    "enabled": {
+      "type": "boolean",
+      "default": true
     }
   },
   "required": ["externals"]
