@@ -39,7 +39,7 @@ export default class HtmlWebpackExternalsPlugin {
 
       const entries = (Array.isArray(entry) ? entry : [entry]).map(entry => {
         if (typeof entry === 'string') {
-          entry = { path: entry, type: null }
+          entry = { path: entry, type: undefined }
         }
         if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry.path)) {
           return entry
@@ -115,7 +115,7 @@ export default class HtmlWebpackExternalsPlugin {
             ),
             append,
             hash: this.hash,
-            files: this.files,
+            files: this.files == null ? undefined : this.files,
             publicPath: '',
           })
         )
