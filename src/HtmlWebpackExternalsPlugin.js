@@ -115,7 +115,7 @@ export default class HtmlWebpackExternalsPlugin {
             ),
             append,
             hash: this.hash,
-            files: this.files,
+            files: this.files == null ? undefined : this.files,
             publicPath: '',
           })
         )
