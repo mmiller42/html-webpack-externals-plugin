@@ -1,21 +1,24 @@
 {
   "name": "html-webpack-externals-plugin",
   "version": "3.5.0",
-  "description":
-    "Webpack plugin that works alongside html-webpack-plugin to use pre-packaged vendor bundles.",
-  "keywords": ["htmlwebpackplugin", "webpack", "html", "externals"],
+  "description": "Webpack plugin that works alongside html-webpack-plugin to use pre-packaged vendor bundles.",
+  "keywords": [
+    "htmlwebpackplugin",
+    "webpack",
+    "html",
+    "externals"
+  ],
   "main": "lib/index.js",
   "scripts": {
     "precommit": "lint-staged",
     "test": "mocha --require babel-register",
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
-    "build:scripts":
-      "rm -rf .circleci/lib && babel .circleci/scripts --out-dir .circleci/lib --source-maps",
+    "build:scripts": "rm -rf .circleci/lib && babel .circleci/scripts --out-dir .circleci/lib --source-maps",
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
-    "*.{js,json}": [
-      "prettier --write --no-semi --single-quote --trailing-comma es5 '{src/**/*.{js,json},test/**/*.js,*.json}'",
+    "{src,test,.circleci/scripts}.{js,json}": [
+      "prettier --write --no-semi --single-quote --trailing-comma es5",
       "git add"
     ]
   },
@@ -31,8 +34,7 @@
   "bugs": {
     "url": "https://github.com/mmiller42/html-webpack-externals-plugin/issues"
   },
-  "homepage":
-    "https://github.com/mmiller42/html-webpack-externals-plugin#readme",
+  "homepage": "https://github.com/mmiller42/html-webpack-externals-plugin#readme",
   "devDependencies": {
     "assertion-error": "^1.0.2",
     "babel-cli": "^6.24.1",
