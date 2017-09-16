@@ -4,7 +4,6 @@ jobs:
     docker:
       - image: circleci/node:latest
     working_directory: ~/html-webpack-externals-plugin
-
     steps:
       - checkout
       - run:
@@ -24,9 +23,6 @@ jobs:
       - run:
           name: Install dependencies
           command: npm install
-      - run:
-          name: Update lockfile
-          command: greenkeeper-lockfile-update
       - save_cache:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
@@ -38,16 +34,17 @@ jobs:
           name: Test
           command: npm test
       - run:
+          name: Update lockfile
+          command: greenkeeper-lockfile-update
+      - run:
           name: Upload lockfile
           command: greenkeeper-lockfile-upload
       - deploy:
           name: Publish
-          filters:
-            tags:
-              only: /^v[0-9]\+\.[0-9]\+\.[0-9]\+$/
-            branches:
-              ignore: /.*/
           command: |
-            npm publish
-            npm run build:scripts
-            npm run run:scripts
+            export TAG="v$(git log -1 --pretty=%B)"
+            if echo $TAG | grep "^v[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
+              npm publish
+            else
+              echo "No tag pushed, skipping deploy"
+            fi

@@ -10,16 +10,16 @@
   ],
   "main": "lib/index.js",
   "scripts": {
-    "precommit": "lint-staged",
-    "test": "mocha --require babel-register",
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
-    "build:scripts": "rm -rf .circleci/lib && babel .circleci/scripts --out-dir .circleci/lib --source-maps",
-    "run:scripts": "node .circleci/lib/index.js",
+    "postpublish": "create-github-release $TAG",
+    "precommit": "lint-staged",
+    "prettier": "prettier --write 'src/**/*.{js,json}'",
+    "test": "mocha --require babel-register",
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
-    "{src,test,.circleci/scripts}.{js,json}": [
-      "prettier --write --no-semi --single-quote --trailing-comma es5",
+    "{{src,test}/*.{js,json}},*.js": [
+      "prettier --write",
       "git add"
     ]
   },
@@ -43,23 +43,20 @@
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
     "bootstrap": "^3.3.7",
+    "create-github-release": "^1.0.7",
     "css-loader": "^0.28.4",
     "escape-string-regexp": "^1.0.5",
     "extract-text-webpack-plugin": "^3.0.0",
-    "github": "^11.0.0",
     "html-webpack-plugin": "^2.0.0",
     "husky": "^0.14.3",
     "jquery": "^3.2.1",
     "lint-staged": "^4.0.2",
     "mocha": "^3.4.2",
-    "mustache": "^2.3.0",
-    "prettier": "^1.5.3",
+    "prettier": "^1.7.0",
     "rimraf": "^2.6.1",
-    "semver-sort": "0.0.4",
     "webpack": "^3.3.0"
   },
   "peerDependencies": {
