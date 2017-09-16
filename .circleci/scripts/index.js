@@ -7,8 +7,8 @@ process.on('unhandledRejection', err => {
 const {
   CIRCLE_PROJECT_USERNAME: OWNER,
   CIRCLE_PROJECT_REPONAME: REPO,
+  CIRCLE_TAG: TAG,
   GH_TOKEN: TOKEN,
-  TAG,
 } = process.env
 
 createRelease({

@@ -42,12 +42,12 @@ jobs:
           command: greenkeeper-lockfile-upload
       - deploy:
           name: Publish
+          filters:
+            tags:
+              only: /^v[0-9]\+\.[0-9]\+\.[0-9]\+$/
+            branches:
+              ignore: /.*/
           command: |
-            export TAG="v$(git log -1 --pretty=%B)"
-            if echo $TAG | grep "^v[0-9]\+\.[0-9]\+\.[0-9]\+$"; then
-              npm publish
-              npm run build:scripts
-              node .circleci/lib/index.js
-            else
-              echo "No tag pushed, skipping deploy"
-            fi
+            npm publish
+            npm run build:scripts
+            npm run run:scripts

@@ -14,6 +14,7 @@
     "test": "mocha --require babel-register",
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
     "build:scripts": "rm -rf .circleci/lib && babel .circleci/scripts --out-dir .circleci/lib --source-maps",
+    "run:scripts": "node .circleci/lib/index.js",
     "watch": "npm run build -- --watch"
   },
   "lint-staged": {
