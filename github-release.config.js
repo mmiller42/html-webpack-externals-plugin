@@ -1,6 +1,6 @@
 const path = require('path')
 
-const MAX_CHANGES_TO_SHOW = 80
+const MAX_LINES_TO_SHOW = 80
 const EXTS_TO_SHOW = ['.css', '.html', 'js', '.json', '.jsx', '.md', '.scss', '.yml']
 
 module.exports = {
@@ -10,8 +10,8 @@ module.exports = {
   },
   owner: 'mmiller42',
   repo: 'html-webpack-externals-plugin',
-  showDiff: ({ filename, changes }) => {
+  showDiff: ({ filename, lines }) => {
     const ext = path.extname(filename)
-    return changes <= MAX_CHANGES_TO_SHOW && (!ext || EXTS_TO_SHOW.includes(ext))
+    return lines && lines <= MAX_LINES_TO_SHOW && (!ext || EXTS_TO_SHOW.includes(ext))
   },
 }
