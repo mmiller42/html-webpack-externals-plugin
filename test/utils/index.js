@@ -62,7 +62,8 @@ export function checkHtmlIncludes(
   file,
   type,
   append = false,
-  htmlFile = 'index.html'
+  htmlFile = 'index.html',
+  additionalContent = null
 ) {
   return promisify(
     fs.readFile,
@@ -71,12 +72,12 @@ export function checkHtmlIncludes(
   ).then(contents => {
     if (type === 'js') {
       assert.ok(
-        contents.match(new RegExp(`<script.*src="${escapeRegExp(file)}".*>`)),
+        contents.match(new RegExp(`<script type="text/javascript" src="${escapeRegExp(file)}".*></script>`)),
         `${file} script was not inserted into the HTML output`
       )
     } else if (type === 'css') {
       assert.ok(
-        contents.match(new RegExp(`<link.*href="${escapeRegExp(file)}".*>`)),
+        contents.match(new RegExp(`<link href="${escapeRegExp(file)}" rel="stylesheet".*>`)),
         `${file} link was not inserted into the HTML output`
       )
     }
@@ -91,6 +92,20 @@ export function checkHtmlIncludes(
         ? 'after'
         : 'before'} the bundle`
     )
+
+    if (additionalContent) {
+      if (type === 'js') {
+        assert.ok(
+          contents.match(new RegExp(`<script type="text/javascript" src="${escapeRegExp(file)}" ${escapeRegExp(additionalContent)}></script>`)),
+          `${file} script did not include attributes ${additionalContent}`
+        )
+      } else if (type === 'css') {
+        assert.ok(
+          contents.match(new RegExp(`<link href="${escapeRegExp(file)}" rel="stylesheet" ${escapeRegExp(additionalContent)}>`)),
+          `${file} link did not include attributes ${additionalContent}`
+        )
+      }
+    }
   })
 }
 

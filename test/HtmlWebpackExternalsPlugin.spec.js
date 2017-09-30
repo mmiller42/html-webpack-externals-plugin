@@ -252,6 +252,39 @@ describe('HtmlWebpackExternalsPlugin', function() {
       )
   })
 
+  it('Adding custom attributes to tags example', function() {
+    const integrity = 'sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE='
+    const crossorigin = 'anonymous'
+
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'jquery',
+            entry: {
+              path: 'https://code.jquery.com/jquery-3.2.1.js',
+              attributes: {
+                integrity,
+                crossorigin,
+              },
+            },
+            global: 'jQuery',
+          },
+        ],
+      })
+    )
+      .then(() =>
+        checkHtmlIncludes(
+          'https://code.jquery.com/jquery-3.2.1.js',
+          'js',
+          undefined,
+          undefined,
+          `integrity="${integrity}" crossorigin="${crossorigin}"`
+        )
+      )
+  })
+
   it('Specifying which HTML files to affect example', function() {
     return runWebpack(
       new HtmlWebpackPlugin({
