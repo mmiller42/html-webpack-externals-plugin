@@ -5,7 +5,7 @@ import configSchema from './configSchema.json'
 
 export default class HtmlWebpackExternalsPlugin {
   static validateArguments = (() => {
-    const ajv = new Ajv({ useDefaults: true })
+    const ajv = new Ajv({ useDefaults: true, removeAdditional: true })
     const validateConfig = ajv.compile(configSchema)
 
     return config => {

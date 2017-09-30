@@ -20,9 +20,19 @@
                 "type": {
                   "type": "string",
                   "enum": ["js", "css"]
+                },
+                "attributes": {
+                  "type": "object",
+                  "patternProperties": {
+                    "^.+$": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "default": {}
                 }
               },
-              "required": ["path", "type"]
+              "required": ["path"]
             },
             "minItems": 1,
             "properties": {
@@ -32,9 +42,19 @@
               "type": {
                 "type": "string",
                 "enum": ["js", "css"]
+              },
+              "attributes": {
+                "type": "object",
+                "patternProperties": {
+                  "^.+$": {
+                    "type": "string"
+                  }
+                },
+                "additionalProperties": false,
+                "default": {}
               }
             },
-            "required": ["path", "type"]
+            "required": ["path"]
           },
           "global": {
             "type": ["string", "null"],

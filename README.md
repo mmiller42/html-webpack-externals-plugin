@@ -44,6 +44,9 @@ The constructor takes a configuration object with the following properties.
 | `externals` | array&lt;object&gt; | An array of vendor modules that will be excluded from your Webpack bundle and added as `script` or `link` tags in your HTML output. | *None* |
 | `externals[].module` | string | The name of the vendor module. This should match the package name, e.g. if you are writing `import React from 'react'`, this would be `react`. | *None* |
 | `externals[].entry` | string \| array&lt;string&gt; \| object \| array&lt;object \| string&gt; | The path, relative to the vendor module directory, to its pre-bundled distro file. e.g. for React, use `dist/react.js`, since the file exists at `node_modules/react/dist/react.js`. Specify an array if there are multiple CSS/JS files to inject. To use a CDN instead, simply use a fully qualified URL beginning with `http://`, `https://`, or `//`.<br><br>For entries whose type (JS or CSS) cannot be inferred by file extension, pass an object such as `{ path: 'https://some/url', type: 'css' }` (or `type: 'js'`). | *None* |
+| `externals[].entry.path` | string | If entry is an object, the path to the asset. | *None* |
+| `externals[].entry.type` | `'js'`\|`'css'` | The asset type, if it cannot be inferred. | *Inferred by extension when possible* |
+| `externals[].entry.attributes` | object.&lt;string,string&gt; | Additional attributes to add to the injected tag. | `{}` |
 | `externals[].global` | string \| null | For JavaScript modules, this is the name of the object globally exported by the vendor's dist file. e.g. for React, use `React`, since `react.js` creates a `window.React` global. For modules without an export (such as CSS), omit this property or use `null`. | `null` |
 | `externals[].supplements` | array&lt;string&gt; | For modules that require additional resources, specify globs of files to copy over to the output. e.g. for Bootstrap CSS, use `['dist/fonts/']`, since Glyphicon fonts are referenced in the CSS and exist at `node_modules/bootstrap/dist/fonts/`. | `[]` |
 | `externals[].append` | boolean | Set to true to inject this module after your Webpack bundles. | `false` |
@@ -263,6 +266,33 @@ new HtmlWebpackExternalsPlugin({
     },
   ],
   publicPath: '/assets/',
+})
+```
+
+### Adding custom attributes to tags example
+
+Sometimes you may want to add custom attributes to the link or script tags that are injected.
+
+This example does not require the `jquery` module to be installed. It:
+
+1. adds `jquery` to your Webpack config's `externals` object to exclude it from your bundle, telling it to expect a global object called `jQuery` (on the `window` object)
+1. adds `<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>` to your HTML file, before your chunks
+
+```js
+new HtmlWebpackExternalsPlugin({
+  externals: [
+    {
+      module: 'jquery',
+      entry: {
+        path: 'https://code.jquery.com/jquery-3.2.1.js',
+        attributes: {
+          integrity: 'sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=',
+          crossorigin: 'anonymous',
+        },
+      },
+      global: 'jQuery',
+    },
+  ],
 })
 ```
 
