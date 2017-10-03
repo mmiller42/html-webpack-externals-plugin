@@ -54,7 +54,7 @@
     "husky": "^0.14.3",
     "jquery": "^3.2.1",
     "lint-staged": "^4.0.2",
-    "mocha": "^3.4.2",
+    "mocha": "^4.0.0",
     "prettier": "^1.7.0",
     "rimraf": "^2.6.1",
     "webpack": "^3.3.0"
