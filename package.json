@@ -63,7 +63,7 @@
     "html-webpack-plugin": "^2.0.0"
   },
   "dependencies": {
-    "ajv": "^5.2.2",
+    "ajv": "^6.0.0",
     "copy-webpack-plugin": "^4.0.1",
     "html-webpack-include-assets-plugin": "^1.0.1"
   }
