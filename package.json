@@ -45,7 +45,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.0.0",
     "create-github-release": "^1.4.1",
     "css-loader": "^0.28.4",
     "escape-string-regexp": "^1.0.5",
