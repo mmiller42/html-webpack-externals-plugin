@@ -45,7 +45,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.23.0",
     "babel-preset-env": "^1.6.0",
     "babel-register": "^6.24.1",
-    "bootstrap": "^3.3.7",
+    "bootstrap": "^4.0.0",
     "create-github-release": "^1.4.1",
     "css-loader": "^0.28.4",
     "escape-string-regexp": "^1.0.5",
@@ -53,8 +53,8 @@
     "html-webpack-plugin": "^2.0.0",
     "husky": "^0.14.3",
     "jquery": "^3.2.1",
-    "lint-staged": "^4.0.2",
-    "mocha": "^3.4.2",
+    "lint-staged": "^6.1.1",
+    "mocha": "^5.0.1",
     "prettier": "^1.7.0",
     "rimraf": "^2.6.1",
     "webpack": "^3.3.0"
@@ -63,7 +63,7 @@
     "html-webpack-plugin": "^2.0.0"
   },
   "dependencies": {
-    "ajv": "^5.2.2",
+    "ajv": "^6.1.1",
     "copy-webpack-plugin": "^4.0.1",
     "html-webpack-include-assets-plugin": "^1.0.1"
   }

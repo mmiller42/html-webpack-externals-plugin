@@ -64,7 +64,7 @@ describe('HtmlWebpackExternalsPlugin', function() {
           {
             module: 'bootstrap',
             entry: 'dist/css/bootstrap.min.css',
-            supplements: ['dist/fonts/'],
+            supplements: ['js/dist/'],
           },
         ],
       })
@@ -72,7 +72,7 @@ describe('HtmlWebpackExternalsPlugin', function() {
       .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))
       .then(() =>
         checkCopied(
-          'vendor/bootstrap/dist/fonts/glyphicons-halflings-regular.eot'
+          'vendor/bootstrap/js/dist/alert.js'
         )
       )
       .then(() =>
@@ -130,20 +130,20 @@ describe('HtmlWebpackExternalsPlugin', function() {
             module: 'bootstrap',
             entry: [
               'dist/css/bootstrap.min.css',
-              'dist/css/bootstrap-theme.min.css',
+              'dist/css/bootstrap-reboot.min.css',
             ],
-            supplements: ['dist/fonts/'],
+            supplements: ['js/dist/'],
           },
         ],
       })
     )
       .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))
       .then(() =>
-        checkCopied('vendor/bootstrap/dist/css/bootstrap-theme.min.css')
+        checkCopied('vendor/bootstrap/dist/css/bootstrap-reboot.min.css')
       )
       .then(() =>
         checkCopied(
-          'vendor/bootstrap/dist/fonts/glyphicons-halflings-regular.eot'
+          'vendor/bootstrap/js/dist/alert.js'
         )
       )
       .then(() =>
@@ -151,7 +151,7 @@ describe('HtmlWebpackExternalsPlugin', function() {
       )
       .then(() =>
         checkHtmlIncludes(
-          'vendor/bootstrap/dist/css/bootstrap-theme.min.css',
+          'vendor/bootstrap/dist/css/bootstrap-reboot.min.css',
           'css'
         )
       )
