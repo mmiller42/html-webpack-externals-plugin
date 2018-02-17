@@ -21,6 +21,10 @@
                   "type": "string",
                   "enum": ["js", "css"]
                 },
+                "cwpPatternConfig": {
+                  "type": "object",
+                  "default": {}
+                },
                 "attributes": {
                   "type": "object",
                   "patternProperties": {
@@ -43,6 +47,10 @@
                 "type": "string",
                 "enum": ["js", "css"]
               },
+              "cwpPatternConfig": {
+                "type": "object",
+                "default": {}
+              },
               "attributes": {
                 "type": "object",
                 "patternProperties": {
@@ -63,7 +71,17 @@
           "supplements": {
             "type": "array",
             "items": {
-              "type": "string"
+              "type": ["string", "object"],
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "cwpPatternConfig": {
+                  "type": "object",
+                  "default": {}
+                }
+              },
+              "required": ["path"]
             },
             "default": []
           },
@@ -95,6 +113,21 @@
       },
       "minItems": 1,
       "default": null
+    },
+    "cwpOptions": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "default": "node_modules/"
+        }
+      },
+      "patternProperties": {
+        "^.+$": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "default": {}
     },
     "enabled": {
       "type": "boolean",

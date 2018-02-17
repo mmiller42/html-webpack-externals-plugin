@@ -1,5 +1,6 @@
 import assert from 'assert'
 import AssertionError from 'assertion-error'
+import path from 'path'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
 import HtmlWebpackExternalsPlugin from '../lib/'
 import {
@@ -130,7 +131,7 @@ describe('HtmlWebpackExternalsPlugin', function() {
             module: 'bootstrap',
             entry: [
               'dist/css/bootstrap.min.css',
-              'dist/css/bootstrap-reboot.min.css',
+              { path: 'dist/css/bootstrap-reboot.min.css', type: 'css' },
             ],
             supplements: ['js/dist/'],
           },
@@ -283,6 +284,77 @@ describe('HtmlWebpackExternalsPlugin', function() {
           `integrity="${integrity}" crossorigin="${crossorigin}"`
         )
       )
+  })
+
+  it('Passing an options argument to the `copy-webpack-plugin` constructor example', function() {
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'context_test',
+            entry: 'dist/contextTest.css',
+          },
+        ],
+        cwpOptions: {
+          context: path.resolve(__dirname, 'fixtures', 'bower_components'),
+        },
+      })
+    )
+      .then(() => checkCopied('vendor/context_test/dist/contextTest.css'))
+      .then(() => checkHtmlIncludes('vendor/context_test/dist/contextTest.css', 'css'))
+  })
+
+  it('Passing custom options to `copy-webpack-plugin` for an entry example', function() {
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'context_test',
+            entry: {
+              path: 'dist/contextTest.css',
+              cwpPatternConfig: {
+                context: path.resolve(__dirname, 'fixtures', 'bower_components'),
+              },
+            },
+          },
+        ],
+      })
+    )
+      .then(() => checkCopied('vendor/context_test/dist/contextTest.css'))
+      .then(() => checkHtmlIncludes('vendor/context_test/dist/contextTest.css', 'css'))
+  })
+
+  it('Passing custom options to `copy-webpack-plugin` for a supplement example', function() {
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'context_test',
+            entry: 'dist/contextTest.css',
+            supplements: [
+              {
+                path: 'dist/{a,b}/',
+                cwpPatternConfig: {
+                  fromArgs: {
+                    nobrace: true,
+                  },
+                },
+              },
+            ],
+          },
+        ],
+        cwpOptions: {
+          context: path.resolve(__dirname, 'fixtures', 'bower_components'),
+        },
+      })
+    )
+      .then(() => checkCopied('vendor/context_test/dist/contextTest.css'))
+      .then(() => checkCopied('vendor/context_test/dist/{a,b}/1.css'))
+      .then(() => checkCopied('vendor/context_test/dist/{a,b}/2.css'))
+      .then(() => checkHtmlIncludes('vendor/context_test/dist/contextTest.css', 'css'))
   })
 
   it('Specifying which HTML files to affect example', function() {

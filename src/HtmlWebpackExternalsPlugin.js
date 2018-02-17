@@ -25,12 +25,13 @@ export default class HtmlWebpackExternalsPlugin {
     this.assetsToCopy = []
     this.externals = {}
 
-    const { externals, hash, outputPath, publicPath, files, enabled } = config
+    const { externals, hash, outputPath, publicPath, files, enabled, cwpOptions } = config
     this.hash = hash
     this.outputPath = outputPath
     this.publicPath = publicPath
     this.files = files
     this.enabled = enabled
+    this.cwpOptions = cwpOptions
 
     externals.forEach(({ module, entry, global, supplements, append }) => {
       this.externals[module] = global
@@ -44,9 +45,10 @@ export default class HtmlWebpackExternalsPlugin {
         if (HtmlWebpackExternalsPlugin.URL_ENTRY.test(entry.path)) {
           return entry
         }
-        const localEntry = `${module}/${entry.path}`
-        localEntries.push(localEntry)
-        return { ...entry, path: localEntry }
+
+        const result = { ...entry, path: `${module}/${entry.path}` }
+        localEntries.push(result)
+        return result
       })
 
       if (append) {
@@ -58,7 +60,11 @@ export default class HtmlWebpackExternalsPlugin {
       this.assetsToCopy = [
         ...this.assetsToCopy,
         ...localEntries,
-        ...supplements.map(asset => `${module}/${asset}`),
+        ...supplements.map(asset =>
+          typeof asset === 'string'
+            ? { path: `${module}/${asset}`, cwpPatternConfig: {} }
+            : { ...asset, path: `${module}/${asset.path}` }
+        ),
       ]
     })
   }
@@ -93,10 +99,12 @@ export default class HtmlWebpackExternalsPlugin {
 
     pluginsToApply.push(
       new CopyWebpackPlugin(
-        this.assetsToCopy.map(asset => ({
-          from: `node_modules/${asset}`,
-          to: `${this.outputPath}/${asset}`,
-        }))
+        this.assetsToCopy.map(({ path, cwpPatternConfig }) => ({
+          from: path,
+          to: `${this.outputPath}/${path}`,
+          ...cwpPatternConfig,
+        })),
+        this.cwpOptions
       )
     )
 
