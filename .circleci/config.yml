@@ -15,9 +15,6 @@ jobs:
             npm install npm@latest --no-save &&
             sudo rm -rf /usr/local/lib/node_modules/npm &&
             sudo mv node_modules/npm /usr/local/lib/node_modules/npm
-      - run:
-          name: Install greenkeeper-lockfile
-          command: sudo npm install -g greenkeeper-lockfile@1
       - restore_cache:
           key: dependency-cache-{{ checksum "package.json" }}
       - run:
@@ -33,12 +30,6 @@ jobs:
       - run:
           name: Test
           command: npm test
-      - run:
-          name: Update lockfile
-          command: greenkeeper-lockfile-update
-      - run:
-          name: Upload lockfile
-          command: greenkeeper-lockfile-upload
       - deploy:
           name: Publish
           command: |
