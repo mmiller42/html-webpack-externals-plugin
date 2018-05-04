@@ -7,6 +7,7 @@ import {
   cleanUp,
   runWebpack,
   checkBundleExcludes,
+  checkConfigExternals,
   checkCopied,
   checkHtmlIncludes,
 } from './utils'
@@ -22,35 +23,37 @@ describe('HtmlWebpackExternalsPlugin', function() {
   })
 
   it('Local JS external example', function() {
+    const externals = [
+      {
+        module: 'jquery',
+        entry: 'dist/jquery.min.js',
+        global: 'jQuery',
+      },
+    ]
+
     return runWebpack(
       new HtmlWebpackPlugin(),
-      new HtmlWebpackExternalsPlugin({
-        externals: [
-          {
-            module: 'jquery',
-            entry: 'dist/jquery.min.js',
-            global: 'jQuery',
-          },
-        ],
-      })
+      new HtmlWebpackExternalsPlugin({ externals })
     )
+      .then(({ config }) => checkConfigExternals(config, externals))
       .then(() => checkBundleExcludes('jQuery'))
       .then(() => checkCopied('vendor/jquery/dist/jquery.min.js'))
       .then(() => checkHtmlIncludes('vendor/jquery/dist/jquery.min.js', 'js'))
   })
 
   it('Local CSS external example', function() {
+    const externals = [
+      {
+        module: 'bootstrap',
+        entry: 'dist/css/bootstrap.min.css',
+      },
+    ]
+
     return runWebpack(
       new HtmlWebpackPlugin(),
-      new HtmlWebpackExternalsPlugin({
-        externals: [
-          {
-            module: 'bootstrap',
-            entry: 'dist/css/bootstrap.min.css',
-          },
-        ],
-      })
+      new HtmlWebpackExternalsPlugin({ externals })
     )
+      .then(({ config }) => checkConfigExternals(config, externals))
       .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))
       .then(() =>
         checkHtmlIncludes('vendor/bootstrap/dist/css/bootstrap.min.css', 'css')
@@ -195,7 +198,7 @@ describe('HtmlWebpackExternalsPlugin', function() {
         hash: true,
       })
     )
-      .then(stats => {
+      .then(({ stats }) => {
         hash = stats.toJson().hash
       })
       .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))

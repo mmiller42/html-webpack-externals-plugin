@@ -13,7 +13,7 @@ export function cleanUp() {
 }
 
 export function runWebpack(...plugins) {
-  return promisify(webpack, {
+  const config = {
     entry: {
       app: path.resolve(__dirname, '..', 'fixtures', 'app.js'),
       style: path.resolve(__dirname, '..', 'fixtures', 'style.css'),
@@ -31,13 +31,15 @@ export function runWebpack(...plugins) {
       ],
     },
     plugins: [new ExtractTextPlugin({ filename: '[name].css' }), ...plugins],
-  }).then(stats => {
+  }
+
+  return promisify(webpack, config).then(stats => {
     assert.strictEqual(
       stats.hasErrors(),
       false,
       stats.toJson().errors.toString()
     )
-    return stats
+    return { stats, config }
   })
 }
 
@@ -56,6 +58,26 @@ export function checkBundleExcludes(external) {
 
 export function checkCopied(file) {
   return promisify(fs.access, path.join(OUTPUT_PATH, file))
+}
+
+export function checkConfigExternals(config, externals) {
+  assert.ok(Array.isArray(config.externals), 'webpackConfig.externals is not an array');
+
+  externals.forEach(({ module, global }) => {
+    if (global) {
+      const expected = { [module]: global }
+      assert.deepEqual(
+        config.externals.find(external => external[module]),
+        expected,
+        `webpackConfig.externals did not contain ${JSON.stringify(expected)}`
+      )
+    } else {
+      assert.ok(
+        config.externals.indexOf(module) > -1,
+        `webpackConfig.externals did not contain ${module}`
+      )
+    }
+  })
 }
 
 export function checkHtmlIncludes(

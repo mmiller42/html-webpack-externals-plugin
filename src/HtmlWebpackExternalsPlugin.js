@@ -23,7 +23,7 @@ export default class HtmlWebpackExternalsPlugin {
     this.assetsToPrepend = []
     this.assetsToAppend = []
     this.assetsToCopy = []
-    this.externals = {}
+    this.externals = []
 
     const { externals, hash, outputPath, publicPath, files, enabled, cwpOptions } = config
     this.hash = hash
@@ -34,7 +34,7 @@ export default class HtmlWebpackExternalsPlugin {
     this.cwpOptions = cwpOptions
 
     externals.forEach(({ module, entry, global, supplements, append }) => {
-      this.externals[module] = global
+      this.externals.push(global ? { [module]: global } : module)
 
       const localEntries = []
 
@@ -77,12 +77,9 @@ export default class HtmlWebpackExternalsPlugin {
     if (!compiler.options.externals) {
       compiler.options.externals = this.externals
     } else if (Array.isArray(compiler.options.externals)) {
-      compiler.options.externals.push(this.externals)
-    } else if (typeof compiler.options.externals === 'object') {
-      compiler.options.externals = {
-        ...compiler.options.externals,
-        ...this.externals,
-      }
+      compiler.options.externals = [...compiler.options.externals, ...this.externals]
+    } else {
+      compiler.options.externals = [compiler.options.externals, ...this.externals]
     }
 
     const publicPath = (() => {
