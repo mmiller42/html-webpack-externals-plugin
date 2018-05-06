@@ -32,10 +32,4 @@ jobs:
           command: npm test
       - deploy:
           name: Publish
-          command: |
-            export TAG="v$(git log -1 --pretty=%B)"
-            if echo $TAG | grep "^v[0-9]\+\.[0-9]\+\.[0-9]\+.*$"; then
-              npm publish
-            else
-              echo "No tag pushed, skipping deploy"
-            fi
+          command: node publish.js
