@@ -2,6 +2,7 @@ const { execSync } = require('child_process');
 
 const commitMessage = execSync('git log -1 --pretty=%B', {
   cwd: __dirname,
+  encoding: 'utf8',
   shell: process.env.SHELL
 }).trim();
 
