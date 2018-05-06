@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "ajv": "^6.1.1",
-    "copy-webpack-plugin": "^4.4.1",
+    "copy-webpack-plugin": "git://github.com/mmiller42/copy-webpack-plugin.git#cde916a4f46cccc0047732834f2a58d73d9af9fc",
     "html-webpack-include-assets-plugin": "^1.0.2"
   }
 }
