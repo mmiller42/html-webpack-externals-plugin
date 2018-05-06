@@ -1,6 +1,6 @@
 {
   "name": "html-webpack-externals-plugin",
-  "version": "3.8.0",
+  "version": "3.8.1-cwp-patch",
   "description": "Webpack plugin that works alongside html-webpack-plugin to use pre-packaged vendor bundles.",
   "keywords": [
     "htmlwebpackplugin",
