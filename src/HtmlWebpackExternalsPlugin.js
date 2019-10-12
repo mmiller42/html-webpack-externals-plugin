@@ -2,6 +2,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin'
 import HtmlWebpackIncludeAssetsPlugin from 'html-webpack-include-assets-plugin'
 import Ajv from 'ajv'
 import configSchema from './configSchema.json'
+import path from 'path'
 
 export default class HtmlWebpackExternalsPlugin {
   static validateArguments = (() => {
@@ -94,14 +95,22 @@ export default class HtmlWebpackExternalsPlugin {
 
     const pluginsToApply = []
 
+    const context = path.isAbsolute(this.cwpOptions.context)
+      ? this.cwpOptions.context
+      : path.resolve(compiler.options.context, this.cwpOptions.context || ".")
+
     pluginsToApply.push(
       new CopyWebpackPlugin(
-        this.assetsToCopy.map(({ dist, ...entry }) => ({
+        this.assetsToCopy.map(({ dist, cwpPatternConfig, ...entry }) => ({
           dist: dist ? `/${dist}` : '',
+          cwpPatternConfig: cwpPatternConfig || {},
           ...entry
         })).map(({ module, path, dist, cwpPatternConfig }) => ({
-          from: `${module}${dist}/${path}`,
-          to: `${this.outputPath}/${module}/${path}`,
+          from: cwpPatternConfig.fromArgs
+            ? {...cwpPatternConfig.fromArgs, glob:`${module}${dist}/${path}`}
+            : `${module}${dist}/${path}`,
+          to: 'UNEXPECTED_ERROR/', // We're going to be overwriting this below
+          transformPath: (_,absolutePath) => (absolutePath.replace(`${cwpPatternConfig.context||context}/${module}${dist}`,`${this.outputPath}/${module}`)),
           ...cwpPatternConfig,
         })),
         this.cwpOptions

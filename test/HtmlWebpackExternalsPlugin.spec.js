@@ -402,6 +402,62 @@ describe('HtmlWebpackExternalsPlugin', function() {
       .then(() => checkHtmlIncludes('vendor/context_test/dist/contextTest.css', 'css'))
   })
 
+  it('works with glob filename supplements, matching single', function() {
+    const externals = [
+      {
+        module: 'bootstrap',
+        entry: ['dist/js/bootstrap.min.js'],
+        supplements: [
+          'dist/css/bootstrap.min.c*s',
+        ]
+      },
+    ]
+
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({ externals })
+    )
+      .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))
+  })
+
+  it('works with glob filename supplements, matching multiple', function() {
+    const externals = [
+      {
+        module: 'bootstrap',
+        entry: ['dist/js/bootstrap.min.js'],
+        supplements: [
+          'dist/css/*.min.css',
+        ]
+      },
+    ]
+
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({ externals })
+    )
+      .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap.min.css'))
+      .then(() => checkCopied('vendor/bootstrap/dist/css/bootstrap-reboot.min.css'))
+  })
+
+  it('works with recursive glob supplements', function() {
+    const externals = [
+      {
+        module: 'bootstrap',
+        entry: ['dist/js/bootstrap.min.js'],
+        supplements: [
+          '**/dropdown.js',
+        ]
+      },
+    ]
+
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({ externals })
+    )
+      .then(() => checkCopied('vendor/bootstrap/js/dist/dropdown.js'))
+      .then(() => checkCopied('vendor/bootstrap/js/src/dropdown.js'))
+  })
+
   it('Specifying which HTML files to affect example', function() {
     return runWebpack(
       new HtmlWebpackPlugin({
