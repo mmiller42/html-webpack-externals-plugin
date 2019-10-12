@@ -33,7 +33,7 @@ export default class HtmlWebpackExternalsPlugin {
     this.enabled = enabled
     this.cwpOptions = cwpOptions
 
-    externals.forEach(({ module, entry, global, supplements, append }) => {
+    externals.forEach(({ module, dist, entry, global, supplements, append }) => {
       this.externals.push(global ? { [module]: global } : module)
 
       const localEntries = []
@@ -46,7 +46,7 @@ export default class HtmlWebpackExternalsPlugin {
           return entry
         }
 
-        const result = { ...entry, path: `${module}/${entry.path}` }
+        const result = { module, dist, ...entry }
         localEntries.push(result)
         return result
       })
@@ -62,8 +62,8 @@ export default class HtmlWebpackExternalsPlugin {
         ...localEntries,
         ...supplements.map(asset =>
           typeof asset === 'string'
-            ? { path: `${module}/${asset}`, cwpPatternConfig: {} }
-            : { ...asset, path: `${module}/${asset.path}` }
+            ? { module, dist, path: asset, cwpPatternConfig: {} }
+            : { module, dist, ...asset }
         ),
       ]
     })
@@ -96,9 +96,12 @@ export default class HtmlWebpackExternalsPlugin {
 
     pluginsToApply.push(
       new CopyWebpackPlugin(
-        this.assetsToCopy.map(({ path, cwpPatternConfig }) => ({
-          from: path,
-          to: `${this.outputPath}/${path}`,
+        this.assetsToCopy.map(({ dist, ...entry }) => ({
+          dist: dist ? `/${dist}` : '',
+          ...entry
+        })).map(({ module, path, dist, cwpPatternConfig }) => ({
+          from: `${module}${dist}/${path}`,
+          to: `${this.outputPath}/${module}/${path}`,
           ...cwpPatternConfig,
         })),
         this.cwpOptions
@@ -115,7 +118,7 @@ export default class HtmlWebpackExternalsPlugin {
                   ? asset
                   : {
                       ...asset,
-                      path: `${publicPath}${this.outputPath}/${asset.path}`,
+                      path: `${publicPath}${this.outputPath}/${asset.module}/${asset.path}`,
                     }
             ),
             append,

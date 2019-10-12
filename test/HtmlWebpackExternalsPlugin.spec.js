@@ -234,6 +234,48 @@ describe('HtmlWebpackExternalsPlugin', function() {
       )
   })
 
+  it('Omitting distribution path example', function() {
+    return runWebpack(
+      new HtmlWebpackPlugin(),
+      new HtmlWebpackExternalsPlugin({
+        externals: [
+          {
+            module: 'bootstrap',
+            dist: 'dist',
+            entry: [
+              'css/bootstrap.min.css',
+              {
+                dist: 'dist/css',
+                path: 'bootstrap-reboot.min.css',
+              },
+            ],
+            supplements: [
+              'js/',
+              {
+                dist: 'js/dist',
+                path: 'dropdown.js',
+              },
+            ],
+          },
+        ],
+      })
+    )
+      .then(() => checkCopied('vendor/bootstrap/css/bootstrap.min.css'))
+      .then(() => checkCopied('vendor/bootstrap/bootstrap-reboot.min.css'))
+      .then(() => checkCopied('vendor/bootstrap/js/bootstrap.bundle.js'))
+      .then(() => checkCopied('vendor/bootstrap/dropdown.js'))
+      .then(() =>
+        checkHtmlIncludes(
+          'vendor/bootstrap/css/bootstrap.min.css',
+          'css'
+        ))
+      .then(() =>
+        checkHtmlIncludes(
+          'vendor/bootstrap/bootstrap-reboot.min.css',
+          'css'
+        ))
+  })
+
   it('Customizing public path example', function() {
     return runWebpack(
       new HtmlWebpackPlugin(),
