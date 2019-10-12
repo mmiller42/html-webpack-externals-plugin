@@ -9,6 +9,7 @@
     "externals"
   ],
   "main": "lib/index.js",
+  "types": "index.d.ts",
   "scripts": {
     "build": "rm -rf lib && babel src --out-dir lib --source-maps --copy-files",
     "postpublish": "create-github-release $TAG",
@@ -63,6 +64,7 @@
     "html-webpack-plugin": "^2.0.0"
   },
   "dependencies": {
+    "@types/copy-webpack-plugin": "^4.4.4",
     "ajv": "^6.1.1",
     "copy-webpack-plugin": "^4.4.1",
     "html-webpack-include-assets-plugin": "^1.0.2"
