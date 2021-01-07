@@ -1,5 +1,13 @@
 # html-webpack-externals-plugin [![CircleCI](https://circleci.com/gh/mmiller42/html-webpack-externals-plugin.svg?style=svg)](https://circleci.com/gh/mmiller42/html-webpack-externals-plugin)
 
+## 🚨 DEPRECATED 🚨
+
+Sorry, this module is no longer maintained, and it's functionality is baked into a wonderful plugin by jharris4, the [html-webpack-tags-plugin](https://github.com/jharris4/html-webpack-tags-plugin).
+
+You're likely to run into issues with it and it has not been used with recent Webpack projects.
+
+---
+
 Webpack plugin that works alongside [`html-webpack-plugin`](https://github.com/jantimon/html-webpack-plugin) to use pre-packaged vendor bundles.
 
 ## How it works
