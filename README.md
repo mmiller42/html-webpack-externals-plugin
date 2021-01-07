@@ -2,7 +2,7 @@
 
 ## 🚨 DEPRECATED 🚨
 
-Sorry, this module is no longer maintained, and it's functionality is baked into wonderful plugins by jharris4, [html-webpack-tags-plugin](https://github.com/jharris4/html-webpack-tags-plugin) and [html-webpack-deploy-plugin](https://github.com/jharris4/html-webpack-deploy-plugin).
+Sorry, this module is no longer maintained, and its functionality is baked into wonderful plugins by jharris4, [html-webpack-tags-plugin](https://github.com/jharris4/html-webpack-tags-plugin) and [html-webpack-deploy-plugin](https://github.com/jharris4/html-webpack-deploy-plugin).
 
 You're likely to run into issues with it and it has not been used with recent Webpack projects.
 
